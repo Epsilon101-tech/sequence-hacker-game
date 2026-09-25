@@ -1,0 +1,369 @@
+<div id="matrix-os-container">
+  <!-- شريط التحكم العلوي -->
+  <div class="sys-nav">
+    <div class="lang-btns">
+      <button onclick="changeLang('ar')" class="active-lang" id="btn-ar">AR</button>
+      <button onclick="changeLang('en')" id="btn-en">EN</button>
+      <button onclick="changeLang('fr')" id="btn-fr">FR</button>
+    </div>
+    <button onclick="toggleHelp()" id="help-btn">[?] دليل النظام</button>
+  </div>
+
+  <!-- نافذة شرح اللعبة -->
+  <div id="help-modal" style="display: none;">
+    <h3 id="help-title">⚠️ تعليمات الاختراق</h3>
+    <p id="help-text" class="dynamic-dir">اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان علامة الاستفهام (?) قبل انتهاء الوقت لتجاوز الجدار الناري. 3 أخطاء وتفقد الاتصال!</p>
+    <button onclick="toggleHelp()" id="close-help-btn">إغلاق</button>
+  </div>
+
+  <!-- عنوان اللعبة الديناميكي -->
+  <div class="game-header">
+    <h2 id="main-game-title" class="glitch-text center-text dynamic-dir">[ اختراق المتتاليات ]</h2>
+  </div>
+
+  <!-- الواجهة الرئيسية -->
+  <div id="game-ui">
+    <div class="hud-bar">
+      <span class="system-root" dir="ltr">ROOT@CYBER_NODE:~#</span>
+      <div class="stats-box dynamic-dir" id="top-stats">
+        <div class="stat-item"><span id="label-score">النقاط:</span> <bdi id="score-val" class="num-highlight">0</bdi></div>
+        <div class="stat-item"><span id="label-level">المستوى:</span> <bdi id="level-val" class="num-highlight">1</bdi></div>
+        <div id="hearts-val" class="hearts" dir="ltr">███</div>
+      </div>
+    </div>
+
+    <!-- مؤشر الوقت -->
+    <div class="progress-container">
+      <div id="timer-bar"></div>
+    </div>
+    <div class="timer-label dynamic-dir"><span id="label-time">الوقت:</span> <bdi id="time-val">15</bdi><span id="time-unit">ثا</span></div>
+
+    <!-- شاشة التيرمنال -->
+    <div class="terminal-screen">
+      <div id="sequence-display" dir="ltr"></div>
+      
+      <div class="cmd-line" dir="ltr">
+        <span class="prompt-arrow">➜</span>
+        <div class="input-wrapper">
+          <input type="number" id="answer-input" placeholder="أدخل الرقم السري لفك التشفير..." autocomplete="off">
+        </div>
+        <button id="submit-btn" onclick="checkAnswer()">EXEC</button>
+      </div>
+      <div id="feedback-msg" class="dynamic-dir"></div>
+    </div>
+  </div>
+
+  <!-- شاشة نهاية اللعبة -->
+  <div id="game-over-ui" style="display: none;">
+    <h1 id="go-title" class="fatal-error" dir="ltr">SYSTEM FAILURE</h1>
+    <p id="go-desc" class="dynamic-dir">تم رصد الاختراق وإغلاق المنافذ!</p>
+    <div class="final-report dynamic-dir">
+      <p class="report-item"><span id="go-score-label">النقاط النهائية:</span> <bdi id="final-score" class="num-highlight">0</bdi></p>
+      <p class="report-item"><span id="go-level-label">مستوى الاختراق:</span> <bdi id="final-level" class="num-highlight">1</bdi></p>
+    </div>
+    <button class="reboot-btn dynamic-dir" id="restart-btn" onclick="restartGame()">إعادة الإقلاع</button>
+  </div>
+</div>
+
+<style>
+  * { box-sizing: border-box; }
+  
+  #matrix-os-container {
+    background-color: #050505;
+    color: #00ff41;
+    font-family: 'Courier New', Courier, monospace;
+    max-width: 100%;
+    width: 500px;
+    margin: 20px auto;
+    padding: 15px;
+    border: 1px solid #00ff41;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2), inset 0 0 10px rgba(0, 255, 65, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* شريط التحكم */
+  .sys-nav { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ff4144; padding-bottom: 10px; margin-bottom: 15px; }
+  .lang-btns button, #help-btn, #close-help-btn { background: transparent; color: #00ff41; border: 1px solid #00ff41; padding: 5px 8px; cursor: pointer; font-family: inherit; font-size: 13px; transition: 0.2s; }
+  .lang-btns .active-lang { background: #00ff41; color: #050505; font-weight: bold; }
+  
+  /* عنوان اللعبة */
+  .game-header { border-bottom: 1px dashed #00ff4144; padding-bottom: 15px; margin-bottom: 15px; }
+  #main-game-title { margin: 0; font-size: 22px; letter-spacing: 2px; text-shadow: 0 0 8px #00ff41; font-weight: bold; }
+
+  #help-modal { background: rgba(5, 5, 5, 0.98); border: 1px solid #00ff41; position: absolute; top: 50px; left: 10px; right: 10px; padding: 20px; z-index: 10; box-shadow: 0 0 20px #000; text-align: center; }
+
+  .hud-bar { margin-bottom: 15px; }
+  .system-root { font-size: 13px; opacity: 0.8; }
+  
+  /* الإحصائيات */
+  .stats-box { display: flex; font-weight: bold; margin-top: 8px; font-size: 14px; flex-wrap: wrap; gap: 15px; }
+  .stats-box.rtl-mode { flex-direction: row-reverse; } 
+  .stats-box.ltr-mode { flex-direction: row; }
+  
+  .stat-item { display: flex; gap: 5px; align-items: center; }
+  .hearts { letter-spacing: 3px; }
+
+  /* الوقت */
+  .progress-container { width: 100%; height: 8px; border: 1px solid #00ff41; padding: 1px; margin-bottom: 5px; }
+  #timer-bar { height: 100%; width: 100%; background: #00ff41; transition: width 1s linear; }
+  
+  .timer-label { font-size: 12px; margin-bottom: 15px; display: flex; gap: 5px; }
+  .timer-label.rtl-mode { flex-direction: row-reverse; }
+  .timer-label.ltr-mode { justify-content: flex-end; }
+
+  /* التيرمنال */
+  .terminal-screen { background: #000; border: 1px dashed #00ff4155; padding: 20px 15px; width: 100%; }
+
+  #sequence-display { font-size: clamp(20px, 6vw, 28px); text-align: center; margin-bottom: 25px; text-shadow: 0 0 5px #00ff41; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+
+  .cmd-line { display: flex; align-items: center; gap: 10px; width: 100%; }
+  .input-wrapper { flex-grow: 1; min-width: 0; }
+  
+  #answer-input { width: 100%; background: #000; color: #00ff41; border: none; border-bottom: 2px solid #00ff41; font-size: 15px; padding: 5px; outline: none; font-family: inherit; text-align: center; }
+  #submit-btn { background: #00ff41; color: #000; border: none; padding: 8px 12px; font-weight: bold; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+  #submit-btn:hover { background: #fff; }
+
+  #feedback-msg { margin-top: 15px; font-size: 14px; min-height: 20px; text-align: center; }
+  .msg-correct { color: #00ff41; }
+  .msg-wrong { color: #ff003c; }
+
+  /* نهاية اللعبة */
+  #game-over-ui { text-align: center; padding: 20px 10px; }
+  .fatal-error { color: #ff003c; text-shadow: 0 0 10px #ff003c; margin-bottom: 10px; font-size: 28px;}
+  
+  .final-report { border: 1px solid #ff003c55; padding: 15px; margin: 20px 0; background: #110000; display: flex; flex-direction: column; gap: 10px; }
+  .report-item { margin: 0; font-size: 16px; display: flex; gap: 10px; justify-content: center;}
+  .final-report.rtl-mode .report-item { flex-direction: row-reverse; }
+  
+  .num-highlight { color: #00ff41; font-weight: bold; }
+
+  .reboot-btn { background: transparent; color: #ff003c; border: 1px solid #ff003c; padding: 10px 20px; font-size: 16px; cursor: pointer; font-family: inherit; width: 100%; display: flex; justify-content: center; gap: 10px; align-items: center;}
+  .reboot-btn.rtl-mode { flex-direction: row-reverse; }
+  .reboot-btn:hover { background: #ff003c; color: #000; }
+  
+  .rtl-mode { direction: rtl; text-align: right; }
+  .ltr-mode { direction: ltr; text-align: left; }
+  .center-text { text-align: center !important; }
+</style>
+
+<script>
+  const dict = {
+    ar: {
+      gameTitle: "[ اختراق المتتاليات ]",
+      helpBtn: "[?] دليل النظام",
+      helpTitle: "⚠️ تعليمات الاختراق",
+      helpText: "اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان علامة الاستفهام (?) قبل انتهاء الوقت لتجاوز الجدار الناري. 3 أخطاء وتفقد الاتصال!",
+      score: "النقاط:",
+      level: "المستوى:",
+      time: "الوقت:",
+      timeUnit: "ثا",
+      placeholder: "أدخل الرقم السري لفك التشفير...",
+      exec: "تنفيذ",
+      goDesc: "تم رصد الاختراق وإغلاق المنافذ!",
+      goScore: "النقاط النهائية:",
+      goLevel: "مستوى الاختراق:",
+      reboot: "إعادة الإقلاع",
+      rebootIcon: "⟲",
+      close: "إغلاق",
+      correct: ">> وصول مصرح به",
+      wrong: ">> فشل التخطي",
+      timeout: ">> انتهى الوقت"
+    },
+    en: {
+      gameTitle: "[ SEQUENCE HACKER ]",
+      helpBtn: "[?] SYSTEM MANUAL",
+      helpTitle: "⚠️ HACKING INSTRUCTIONS",
+      helpText: "Discover the hidden mathematical pattern. Enter the missing number (?) before time runs out to bypass the firewall. 3 strikes and you are out!",
+      score: "SCORE:",
+      level: "LEVEL:",
+      time: "TIME:",
+      timeUnit: "s",
+      placeholder: "Enter secret code to decrypt...",
+      exec: "EXEC",
+      goDesc: "BREACH DETECTED. PORTS CLOSED!",
+      goScore: "FINAL SCORE:",
+      goLevel: "HACK LEVEL:",
+      reboot: "REBOOT_SYSTEM",
+      rebootIcon: ">",
+      close: "CLOSE",
+      correct: ">> ACCESS GRANTED",
+      wrong: ">> ACCESS DENIED",
+      timeout: ">> TIMEOUT"
+    },
+    fr: {
+      gameTitle: "[ HACKEUR DE SÉQUENCE ]",
+      helpBtn: "[?] MANUEL SYSTÈME",
+      helpTitle: "⚠️ INSTRUCTIONS DE PIRATAGE",
+      helpText: "Découvrez le modèle mathématique caché. Entrez le nombre manquant (?) avant la fin du temps imparti. 3 erreurs et vous êtes déconnecté!",
+      score: "SCORE:",
+      level: "NIVEAU:",
+      time: "TEMPS:",
+      timeUnit: "s",
+      placeholder: "Entrer le code pour décrypter...",
+      exec: "EXÉC",
+      goDesc: "INTRUSION DÉTECTÉE. PORTS FERMÉS!",
+      goScore: "SCORE FINAL:",
+      goLevel: "NIVEAU ATTEINT:",
+      reboot: "REDÉMARRER",
+      rebootIcon: ">",
+      close: "FERMER",
+      correct: ">> ACCÈS AUTORISÉ",
+      wrong: ">> ACCÈS REFUSÉ",
+      timeout: ">> TEMPS ÉCOULÉ"
+    }
+  };
+
+  let currentLang = 'ar';
+  let score = 0, level = 1, lives = 3, correctAnswer = 0, timeLeft = 15, timerInterval = null;
+
+  function changeLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btns button').forEach(btn => btn.classList.remove('active-lang'));
+    document.getElementById(`btn-${lang}`).classList.add('active-lang');
+    
+    // تغيير نصوص الواجهة
+    document.getElementById('main-game-title').innerText = dict[lang].gameTitle;
+    document.getElementById('help-btn').innerText = dict[lang].helpBtn;
+    document.getElementById('help-title').innerText = dict[lang].helpTitle;
+    document.getElementById('help-text').innerText = dict[lang].helpText;
+    document.getElementById('label-score').innerText = dict[lang].score;
+    document.getElementById('label-level').innerText = dict[lang].level;
+    document.getElementById('label-time').innerText = dict[lang].time;
+    document.getElementById('time-unit').innerText = dict[lang].timeUnit;
+    document.getElementById('answer-input').placeholder = dict[lang].placeholder;
+    document.getElementById('submit-btn').innerText = dict[lang].exec;
+    document.getElementById('go-desc').innerText = dict[lang].goDesc;
+    document.getElementById('go-score-label').innerText = dict[lang].goScore;
+    document.getElementById('go-level-label').innerText = dict[lang].goLevel;
+    
+    document.getElementById('restart-btn').innerHTML = `<span>${dict[lang].rebootIcon}</span> <span>${dict[lang].reboot}</span>`;
+    document.getElementById('close-help-btn').innerText = dict[lang].close;
+
+    // تطبيق الاتجاه
+    let dirClass = lang === 'ar' ? 'rtl-mode' : 'ltr-mode';
+    let removeClass = lang === 'ar' ? 'ltr-mode' : 'rtl-mode';
+    
+    document.querySelectorAll('.dynamic-dir').forEach(el => {
+      el.classList.remove(removeClass);
+      el.classList.add(dirClass);
+      if(el.id === 'help-text' || el.id === 'go-desc' || el.id === 'feedback-msg' || el.id === 'main-game-title') {
+          el.classList.add('center-text');
+      }
+    });
+  }
+
+  function toggleHelp() {
+    let modal = document.getElementById('help-modal');
+    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    let maxTime = Math.max(7, 16 - level);
+    timeLeft = maxTime;
+    document.getElementById("time-val").innerText = timeLeft;
+    let timerBar = document.getElementById("timer-bar");
+    timerBar.style.width = "100%";
+    timerBar.style.background = "#00ff41";
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("time-val").innerText = timeLeft;
+      timerBar.style.width = ((timeLeft / maxTime) * 100) + "%";
+      if (timeLeft <= 5) { timerBar.style.background = "#ff003c"; }
+      if (timeLeft <= 0) { clearInterval(timerInterval); handleWrongAnswer(dict[currentLang].timeout); }
+    }, 1000);
+  }
+
+  function generateSequence() {
+    startTimer();
+    let sequence = [], seqLength = 5;
+    let patternType = (level >= 5 && Math.random() > 0.4) ? "geometric" : (level >= 3 ? "complex" : "simple");
+
+    if (patternType === "geometric") {
+      let start = Math.floor(Math.random() * 3) + 2;
+      let step = Math.random() > 0.5 ? 2 : 3;
+      for (let i = 0; i < seqLength; i++) { sequence.push(start * Math.pow(step, i)); }
+    } else if (patternType === "complex") {
+      let start = Math.floor(Math.random() * 30) + 10;
+      let step = (Math.floor(Math.random() * 6) + 2) * (Math.random() > 0.5 ? 1 : -1);
+      for (let i = 0; i < seqLength; i++) { sequence.push(start + (i * step)); }
+    } else {
+      let start = Math.floor(Math.random() * 10) + 1;
+      let step = Math.floor(Math.random() * 5) + 1;
+      for (let i = 0; i < seqLength; i++) { sequence.push(start + (i * step)); }
+    }
+
+    let hiddenIndex = Math.floor(Math.random() * seqLength);
+    correctAnswer = sequence[hiddenIndex];
+    sequence[hiddenIndex] = "?";
+
+    document.getElementById("sequence-display").innerHTML = sequence.map(num => `<span>${num}</span>`).join('<span style="color:#008f11">,</span>');
+    document.getElementById("answer-input").value = "";
+    document.getElementById("answer-input").focus();
+  }
+
+  function checkAnswer() {
+    let inputVal = document.getElementById("answer-input").value;
+    if (inputVal === "") return;
+    let userAnswer = parseInt(inputVal);
+    let feedback = document.getElementById("feedback-msg");
+    clearInterval(timerInterval);
+
+    if (userAnswer === correctAnswer) {
+      score += (10 + level * 2);
+      feedback.innerText = dict[currentLang].correct;
+      feedback.className = "msg-correct dynamic-dir center-text";
+      if (score >= level * 50) { level++; document.getElementById("level-val").innerText = level; }
+      document.getElementById("score-val").innerText = score;
+      setTimeout(() => { feedback.innerText = ""; generateSequence(); }, 800);
+    } else {
+      handleWrongAnswer(dict[currentLang].wrong);
+    }
+  }
+
+  function handleWrongAnswer(msg) {
+    lives--; updateHearts();
+    let feedback = document.getElementById("feedback-msg");
+    feedback.innerText = msg + ` (ERR: -1)`;
+    feedback.className = "msg-wrong dynamic-dir center-text";
+
+    if (lives <= 0) { triggerGameOver(); } 
+    else { setTimeout(() => { feedback.innerText = ""; generateSequence(); }, 1200); }
+  }
+
+  function updateHearts() {
+    let heartsStr = "";
+    for (let i = 0; i < 3; i++) { heartsStr += (i < lives) ? "█" : "_"; }
+    document.getElementById("hearts-val").innerText = heartsStr;
+    if(lives === 1) { document.getElementById("hearts-val").style.color = "#ff003c"; }
+  }
+
+  function triggerGameOver() {
+    clearInterval(timerInterval);
+    document.getElementById("game-ui").style.display = "none";
+    document.getElementById("game-over-ui").style.display = "block";
+    document.getElementById("final-score").innerText = score;
+    document.getElementById("final-level").innerText = level;
+  }
+
+  function restartGame() {
+    score = 0; level = 1; lives = 3;
+    document.getElementById("score-val").innerText = score;
+    document.getElementById("level-val").innerText = level;
+    document.getElementById("hearts-val").style.color = "#00ff41";
+    updateHearts();
+    document.getElementById("game-over-ui").style.display = "none";
+    document.getElementById("game-ui").style.display = "block";
+    generateSequence();
+  }
+
+  document.getElementById("answer-input").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") { event.preventDefault(); checkAnswer(); }
+  });
+
+  changeLang('ar');
+  generateSequence();
+</script>
