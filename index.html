@@ -96,50 +96,52 @@
     .hp-pip.danger { background: #ff3344; box-shadow: 0 0 8px #ff3344; animation: blinkDanger 0.8s infinite; }
     @keyframes blinkDanger { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    /* الخط المتحرك المبتكر والسميك (10px) */
+    /* شريط الليزر النيون السميك (12px) المتحرك */
     .progress-container {
       width: 100%;
-      height: 10px;
-      border: 1px solid #00ff6666;
-      background: #001205;
-      margin-bottom: 4px;
+      height: 12px;
+      border: 1px solid #00ff6688;
+      background: #001507;
+      margin-bottom: 5px;
       flex-shrink: 0;
-      border-radius: 2px;
+      border-radius: 3px;
       padding: 1px;
-      box-shadow: 0 0 8px rgba(0, 255, 102, 0.2), inset 0 0 6px #000;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.25), inset 0 0 8px #000;
       position: relative;
+      overflow: hidden;
     }
     #timer-bar {
       height: 100%;
       width: 100%;
-      background: linear-gradient(90deg, #00aa33, #00ff66, #88ffbb);
-      background-size: 24px 24px;
-      background-image: linear-gradient(
+      background: repeating-linear-gradient(
         -45deg,
-        rgba(0, 0, 0, 0.3) 25%,
-        transparent 25%,
-        transparent 50%,
-        rgba(0, 0, 0, 0.3) 50%,
-        rgba(0, 0, 0, 0.3) 75%,
-        transparent 75%,
-        transparent
+        #00aa33,
+        #00aa33 10px,
+        #00ff66 10px,
+        #00ff66 20px
       );
-      animation: laserFlow 0.8s linear infinite;
-      box-shadow: 0 0 10px #00ff66, inset 0 0 4px #ffffff;
+      background-size: 200% 100%;
+      animation: laserFlow 1s linear infinite;
+      box-shadow: 0 0 10px #00ff66;
       transition: width 1s linear, background-color 0.3s;
     }
     @keyframes laserFlow {
       0% { background-position: 0 0; }
-      100% { background-position: 24px 0; }
+      100% { background-position: 28px 0; }
     }
     .timer-danger {
-      background: linear-gradient(90deg, #cc1122, #ff3344, #ff8899) !important;
-      box-shadow: 0 0 15px #ff3344, inset 0 0 4px #ffffff !important;
+      background: repeating-linear-gradient(
+        -45deg,
+        #cc1122,
+        #cc1122 10px,
+        #ff3344 10px,
+        #ff3344 20px
+      ) !important;
+      box-shadow: 0 0 15px #ff3344 !important;
     }
 
     .timer-label { font-size: 11px; margin-bottom: 8px; display: flex; gap: 4px; flex-shrink: 0; }
 
-    /* شاشة التيرمنال */
     .terminal-screen {
       flex: 1;
       display: flex;
@@ -197,7 +199,6 @@
     }
     #submit-btn:active { background: #fff; color: #000; box-shadow: 0 0 10px #fff; }
 
-    /* لوحة الأرقام السريعة بصفين */
     .cyber-keys-compact {
       display: flex;
       flex-direction: column;
@@ -278,7 +279,6 @@
 <div id="matrix-os-container">
   <div class="crt-overlay"></div>
 
-  <!-- شريط اللغات والمساعدة -->
   <div class="sys-nav">
     <div class="lang-btns">
       <button onclick="changeLang('ar')" class="active-lang" id="btn-ar">AR</button>
@@ -291,9 +291,8 @@
     </div>
   </div>
 
-  <!-- نافذة المساعدة -->
   <div id="help-modal" style="display: none;">
-    <h3 id="help-title">⚠️ تعليمات الاختراق</h3>
+    <h3 id="help-title">⚠️️ تعليمات الاختراق</h3>
     <p id="help-text" class="dynamic-dir">
       اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان (?) عبر أزرار الأرقام بالأسفل لتجاوز الجدار الناري قبل نفاد الوقت!
     </p>
@@ -320,7 +319,7 @@
       </div>
     </div>
 
-    <!-- شريط الليزر المتحرك والسميك -->
+    <!-- مؤشر الليزر النيون السميك والمتحرك -->
     <div class="progress-container">
       <div id="timer-bar"></div>
     </div>
@@ -345,7 +344,6 @@
         <button id="submit-btn" onclick="checkAnswer()">تنفيذ</button>
       </div>
 
-      <!-- أزرار الأرقام المسطحة -->
       <div class="cyber-keys-compact" dir="ltr">
         <div class="keys-row">
           <button type="button" class="num-key" onclick="pressPad('1')">1</button>
