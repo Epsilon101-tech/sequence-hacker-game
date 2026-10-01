@@ -27,8 +27,9 @@
       width: 100%;
       max-width: 500px;
       margin: 0 auto;
-      padding: 8px 12px;
+      padding: 10px 14px;
       position: relative;
+      justify-content: space-between;
     }
 
     .crt-overlay {
@@ -47,7 +48,6 @@
       align-items: center; 
       border-bottom: 1px solid #00ff6633; 
       padding-bottom: 6px; 
-      margin-bottom: 6px; 
       flex-shrink: 0; 
     }
     .nav-right { display: flex; gap: 6px; }
@@ -55,24 +55,35 @@
       background: transparent;
       color: #00ff66;
       border: 1px solid #00ff66;
-      padding: 3px 7px;
+      padding: 4px 8px;
       cursor: pointer;
       font-family: inherit;
       font-size: 11px;
+      border-radius: 2px;
     }
     .lang-btns .active-lang { background: #00ff66; color: #020703; font-weight: bold; }
 
-    .game-header { border-bottom: 1px dashed #00ff6633; padding-bottom: 5px; margin-bottom: 6px; flex-shrink: 0; }
-    #main-game-title { margin: 0; font-size: 17px; letter-spacing: 1.5px; text-shadow: 0 0 8px #00ff66; font-weight: bold; }
+    .game-header { 
+      border-bottom: 1px dashed #00ff6633; 
+      padding: 6px 0; 
+      flex-shrink: 0; 
+    }
+    #main-game-title { 
+      margin: 0; 
+      font-size: 18px; 
+      letter-spacing: 1.5px; 
+      text-shadow: 0 0 10px #00ff66; 
+      font-weight: bold; 
+    }
 
     #help-modal {
       background: rgba(2, 7, 3, 0.98);
       border: 1px solid #00ff66;
       position: absolute;
       top: 40px; left: 10px; right: 10px;
-      padding: 15px;
+      padding: 18px;
       z-index: 110;
-      box-shadow: 0 0 20px #000;
+      box-shadow: 0 0 25px #000;
       text-align: center;
     }
 
@@ -80,33 +91,35 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 0;
       overflow: hidden;
     }
 
-    .hud-bar { margin-bottom: 6px; flex-shrink: 0; }
+    .hud-bar { flex-shrink: 0; }
     .system-root { font-size: 11px; opacity: 0.85; display: flex; justify-content: space-between; align-items: center; }
-    .combo-badge { background: #00ff6622; border: 1px solid #00ff66; padding: 1px 5px; border-radius: 2px; font-weight: bold; }
+    .combo-badge { background: #ffe60022; border: 1px solid #ffe600; padding: 1px 6px; border-radius: 2px; font-weight: bold; color: #ffe600; text-shadow: 0 0 5px #ffe600; }
 
-    .stats-box { display: flex; font-weight: bold; margin-top: 4px; font-size: 12px; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .stats-box { display: flex; font-weight: bold; margin-top: 5px; font-size: 12px; flex-wrap: wrap; gap: 12px; align-items: center; }
     .stat-item { display: flex; gap: 4px; align-items: center; }
     
-    .hp-slots { display: inline-flex; gap: 4px; align-items: center; }
-    .hp-pip { width: 14px; height: 14px; background: #00ff66; box-shadow: 0 0 6px #00ff66; border-radius: 1px; }
+    .hp-slots { display: inline-flex; gap: 5px; align-items: center; }
+    .hp-pip { width: 15px; height: 15px; background: #00ff66; box-shadow: 0 0 6px #00ff66; border-radius: 2px; }
     .hp-pip.lost { background: #00220a !important; box-shadow: none !important; opacity: 0.25; }
     .hp-pip.danger { background: #ff3344; box-shadow: 0 0 8px #ff3344; animation: blinkDanger 0.8s infinite; }
     @keyframes blinkDanger { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    /* شريط الليزر النيون السميك (12px) المتحرك */
+    /* شريط الليزر النيون الأصفر المشع والمتحرك */
     .progress-container {
       width: 100%;
-      height: 12px;
-      border: 1px solid #00ff6688;
-      background: #001507;
-      margin-bottom: 5px;
+      height: 14px;
+      border: 1px solid #ffe600aa;
+      background: #1a1600;
+      margin: 8px 0 4px 0;
       flex-shrink: 0;
       border-radius: 3px;
-      padding: 1px;
-      box-shadow: 0 0 10px rgba(0, 255, 102, 0.25), inset 0 0 8px #000;
+      padding: 1.5px;
+      box-shadow: 0 0 12px rgba(255, 230, 0, 0.3), inset 0 0 6px #000;
       position: relative;
       overflow: hidden;
     }
@@ -115,33 +128,43 @@
       width: 100%;
       background: repeating-linear-gradient(
         -45deg,
-        #00aa33,
-        #00aa33 10px,
-        #00ff66 10px,
-        #00ff66 20px
+        #cca700,
+        #cca700 12px,
+        #ffe600 12px,
+        #ffe600 24px
       );
       background-size: 200% 100%;
-      animation: laserFlow 1s linear infinite;
-      box-shadow: 0 0 10px #00ff66;
-      transition: width 1s linear, background-color 0.3s;
+      animation: yellowLaserFlow 0.85s linear infinite;
+      box-shadow: 0 0 14px #ffe600, inset 0 0 4px #ffffff;
+      border-radius: 1px;
+      transition: width 1s linear;
     }
-    @keyframes laserFlow {
+    @keyframes yellowLaserFlow {
       0% { background-position: 0 0; }
-      100% { background-position: 28px 0; }
+      100% { background-position: 34px 0; }
     }
     .timer-danger {
       background: repeating-linear-gradient(
         -45deg,
         #cc1122,
-        #cc1122 10px,
-        #ff3344 10px,
-        #ff3344 20px
+        #cc1122 12px,
+        #ff3344 12px,
+        #ff3344 24px
       ) !important;
-      box-shadow: 0 0 15px #ff3344 !important;
+      box-shadow: 0 0 16px #ff3344, inset 0 0 4px #ffffff !important;
     }
 
-    .timer-label { font-size: 11px; margin-bottom: 8px; display: flex; gap: 4px; flex-shrink: 0; }
+    .timer-label { 
+      font-size: 11px; 
+      margin-bottom: 8px; 
+      display: flex; 
+      gap: 4px; 
+      flex-shrink: 0; 
+      color: #ffe600;
+      text-shadow: 0 0 5px rgba(255, 230, 0, 0.5);
+    }
 
+    /* منطقة التيرمنال وتوزيعها المتناسق على طول الشاشة */
     .terminal-screen {
       flex: 1;
       display: flex;
@@ -149,27 +172,51 @@
       justify-content: space-between;
       background: #000c03;
       border: 1px dashed #00ff6666;
-      padding: 12px 10px;
-      box-shadow: inset 0 0 12px rgba(0, 255, 102, 0.06);
+      padding: 14px 12px;
+      box-shadow: inset 0 0 15px rgba(0, 255, 102, 0.08);
+      border-radius: 3px;
+      min-height: 0;
     }
 
-    .pattern-hint-bar { display: flex; justify-content: space-between; align-items: center; font-size: 11px; opacity: 0.85; flex-shrink: 0; }
+    .pattern-hint-bar { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      font-size: 11px; 
+      opacity: 0.9; 
+      flex-shrink: 0; 
+    }
     
-    #sequence-display {
-      font-size: clamp(24px, 7vw, 32px);
-      text-align: center;
+    /* بطاقة المتتالية الرقمية الكبيرة */
+    .sequence-card {
+      background: rgba(0, 255, 102, 0.03);
+      border: 1px solid #00ff6633;
+      border-radius: 4px;
+      padding: 20px 10px;
       margin: auto 0;
-      text-shadow: 0 0 10px #00ff66;
+      box-shadow: inset 0 0 12px rgba(0, 255, 102, 0.04);
+    }
+    #sequence-display {
+      font-size: clamp(26px, 8vw, 36px);
+      text-align: center;
+      text-shadow: 0 0 14px #00ff66;
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
       font-weight: bold;
       letter-spacing: 2px;
     }
 
-    .cmd-line { display: flex; align-items: center; gap: 8px; width: 100%; margin-bottom: 10px; flex-shrink: 0; }
-    .prompt-arrow { color: #00ff66; font-size: 16px; }
+    .cmd-line { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      width: 100%; 
+      margin-bottom: 12px; 
+      flex-shrink: 0; 
+    }
+    .prompt-arrow { color: #00ff66; font-size: 18px; }
     .input-wrapper { flex-grow: 1; }
     #answer-input {
       width: 100%;
@@ -177,8 +224,8 @@
       color: #00ff66;
       border: none;
       border-bottom: 2px solid #00ff66;
-      font-size: 16px;
-      padding: 4px;
+      font-size: 18px;
+      padding: 5px;
       outline: none;
       font-family: inherit;
       text-align: center;
@@ -189,50 +236,51 @@
       background: #00ff66;
       color: #020703;
       border: none;
-      padding: 7px 16px;
+      padding: 10px 18px;
       font-weight: bold;
       cursor: pointer;
       font-family: inherit;
-      font-size: 13px;
+      font-size: 14px;
       white-space: nowrap;
       flex-shrink: 0;
+      border-radius: 2px;
     }
-    #submit-btn:active { background: #fff; color: #000; box-shadow: 0 0 10px #fff; }
+    #submit-btn:active { background: #fff; color: #000; box-shadow: 0 0 12px #fff; }
 
+    /* لوحة الأرقام اللمسية المريحة والواضحة */
     .cyber-keys-compact {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 8px;
       width: 100%;
-      max-width: 360px;
       margin: 0 auto;
       flex-shrink: 0;
     }
-    .keys-row { display: flex; gap: 5px; width: 100%; }
+    .keys-row { display: flex; gap: 8px; width: 100%; }
     .num-key {
       flex: 1;
       background: #021a08;
       color: #00ff66;
-      border: 1px solid #00ff6644;
-      padding: 8px 0;
-      font-size: 16px;
+      border: 1px solid #00ff6655;
+      padding: 14px 0;
+      font-size: 18px;
       font-weight: bold;
       font-family: inherit;
       cursor: pointer;
-      border-radius: 3px;
+      border-radius: 4px;
       display: flex;
       justify-content: center;
       align-items: center;
       touch-action: manipulation;
     }
-    .num-key:active { background: #00ff66; color: #000; }
-    .fn-key { background: #02240b; color: #88ffaa; }
-    .del-key { color: #ff5566; border-color: #ff556644; }
-    .del-key:active { background: #ff3344; color: #000; }
+    .num-key:active { background: #00ff66; color: #000; box-shadow: 0 0 8px #00ff66; }
+    .fn-key { background: #02260c; color: #88ffaa; }
+    .del-key { color: #ff5566; border-color: #ff556655; background: #1f0507; }
+    .del-key:active { background: #ff3344; color: #000; box-shadow: 0 0 8px #ff3344; }
 
-    #feedback-msg { margin-top: 6px; font-size: 12px; min-height: 18px; font-weight: bold; text-align: center; flex-shrink: 0; }
-    .msg-correct { color: #00ff66; text-shadow: 0 0 5px #00ff66; }
-    .msg-wrong { color: #ff3344; text-shadow: 0 0 5px #ff3344; }
+    #feedback-msg { margin-top: 8px; font-size: 12px; min-height: 18px; font-weight: bold; text-align: center; flex-shrink: 0; }
+    .msg-correct { color: #00ff66; text-shadow: 0 0 6px #00ff66; }
+    .msg-wrong { color: #ff3344; text-shadow: 0 0 6px #ff3344; }
 
     #game-over-ui {
       flex: 1;
@@ -243,22 +291,23 @@
       text-align: center;
       padding: 15px;
     }
-    .fatal-error { color: #ff3344; text-shadow: 0 0 10px #ff3344; margin-bottom: 10px; font-size: 22px; }
-    .final-report { width: 100%; border: 1px solid #ff334455; padding: 12px; margin: 15px 0; background: #140204; display: flex; flex-direction: column; gap: 6px; }
-    .report-item { margin: 0; font-size: 13px; display: flex; gap: 6px; justify-content: center; }
+    .fatal-error { color: #ff3344; text-shadow: 0 0 10px #ff3344; margin-bottom: 10px; font-size: 24px; }
+    .final-report { width: 100%; border: 1px solid #ff334455; padding: 15px; margin: 15px 0; background: #140204; display: flex; flex-direction: column; gap: 8px; }
+    .report-item { margin: 0; font-size: 14px; display: flex; gap: 6px; justify-content: center; }
 
     .reboot-btn {
       background: transparent;
       color: #ff3344;
       border: 1px solid #ff3344;
-      padding: 9px;
-      font-size: 13px;
+      padding: 12px;
+      font-size: 14px;
       cursor: pointer;
       font-family: inherit;
       width: 100%;
       display: flex;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
+      border-radius: 3px;
     }
     .reboot-btn:active { background: #ff3344; color: #000; }
 
@@ -292,7 +341,7 @@
   </div>
 
   <div id="help-modal" style="display: none;">
-    <h3 id="help-title">⚠️️ تعليمات الاختراق</h3>
+    <h3 id="help-title">⚠️ تعليمات الاختراق</h3>
     <p id="help-text" class="dynamic-dir">
       اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان (?) عبر أزرار الأرقام بالأسفل لتجاوز الجدار الناري قبل نفاد الوقت!
     </p>
@@ -319,7 +368,7 @@
       </div>
     </div>
 
-    <!-- مؤشر الليزر النيون السميك والمتحرك -->
+    <!-- مؤشر الليزر النيون الأصفر المشع والمتحرك -->
     <div class="progress-container">
       <div id="timer-bar"></div>
     </div>
@@ -334,7 +383,10 @@
         <button id="hint-btn" onclick="useHint()">💡 تلميح (-5 ثوان)</button>
       </div>
 
-      <div id="sequence-display" dir="ltr"></div>
+      <!-- بطاقة المتتالية لملء الفراغ وإبراز الأرقام -->
+      <div class="sequence-card">
+        <div id="sequence-display" dir="ltr"></div>
+      </div>
       
       <div class="cmd-line" dir="ltr">
         <span class="prompt-arrow">➜</span>
@@ -344,6 +396,7 @@
         <button id="submit-btn" onclick="checkAnswer()">تنفيذ</button>
       </div>
 
+      <!-- لوحة أرقام لمسية مرتفعة ومريحة للأصابع -->
       <div class="cyber-keys-compact" dir="ltr">
         <div class="keys-row">
           <button type="button" class="num-key" onclick="pressPad('1')">1</button>
