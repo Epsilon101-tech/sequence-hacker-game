@@ -92,7 +92,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 6px 0;
       overflow: hidden;
     }
 
@@ -156,7 +156,7 @@
 
     .timer-label { 
       font-size: 11px; 
-      margin-bottom: 8px; 
+      margin-bottom: 6px; 
       display: flex; 
       gap: 4px; 
       flex-shrink: 0; 
@@ -164,7 +164,6 @@
       text-shadow: 0 0 5px rgba(255, 230, 0, 0.5);
     }
 
-    /* منطقة التيرمنال وتوزيعها المتناسق على طول الشاشة */
     .terminal-screen {
       flex: 1;
       display: flex;
@@ -172,7 +171,7 @@
       justify-content: space-between;
       background: #000c03;
       border: 1px dashed #00ff6666;
-      padding: 14px 12px;
+      padding: 12px 10px;
       box-shadow: inset 0 0 15px rgba(0, 255, 102, 0.08);
       border-radius: 3px;
       min-height: 0;
@@ -187,17 +186,16 @@
       flex-shrink: 0; 
     }
     
-    /* بطاقة المتتالية الرقمية الكبيرة */
     .sequence-card {
       background: rgba(0, 255, 102, 0.03);
       border: 1px solid #00ff6633;
       border-radius: 4px;
-      padding: 20px 10px;
+      padding: 18px 10px;
       margin: auto 0;
       box-shadow: inset 0 0 12px rgba(0, 255, 102, 0.04);
     }
     #sequence-display {
-      font-size: clamp(26px, 8vw, 36px);
+      font-size: clamp(24px, 7.5vw, 34px);
       text-align: center;
       text-shadow: 0 0 14px #00ff66;
       display: flex;
@@ -213,7 +211,7 @@
       align-items: center; 
       gap: 10px; 
       width: 100%; 
-      margin-bottom: 12px; 
+      margin-bottom: 10px; 
       flex-shrink: 0; 
     }
     .prompt-arrow { color: #00ff66; font-size: 18px; }
@@ -247,22 +245,21 @@
     }
     #submit-btn:active { background: #fff; color: #000; box-shadow: 0 0 12px #fff; }
 
-    /* لوحة الأرقام اللمسية المريحة والواضحة */
     .cyber-keys-compact {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
       width: 100%;
       margin: 0 auto;
       flex-shrink: 0;
     }
-    .keys-row { display: flex; gap: 8px; width: 100%; }
+    .keys-row { display: flex; gap: 7px; width: 100%; }
     .num-key {
       flex: 1;
       background: #021a08;
       color: #00ff66;
       border: 1px solid #00ff6655;
-      padding: 14px 0;
+      padding: 13px 0;
       font-size: 18px;
       font-weight: bold;
       font-family: inherit;
@@ -278,7 +275,7 @@
     .del-key { color: #ff5566; border-color: #ff556655; background: #1f0507; }
     .del-key:active { background: #ff3344; color: #000; box-shadow: 0 0 8px #ff3344; }
 
-    #feedback-msg { margin-top: 8px; font-size: 12px; min-height: 18px; font-weight: bold; text-align: center; flex-shrink: 0; }
+    #feedback-msg { margin-top: 6px; font-size: 12px; min-height: 18px; font-weight: bold; text-align: center; flex-shrink: 0; }
     .msg-correct { color: #00ff66; text-shadow: 0 0 6px #00ff66; }
     .msg-wrong { color: #ff3344; text-shadow: 0 0 6px #ff3344; }
 
@@ -341,9 +338,9 @@
   </div>
 
   <div id="help-modal" style="display: none;">
-    <h3 id="help-title">⚠️ تعليمات الاختراق</h3>
+    <h3 id="help-title">⚠️️ تعليمات الاختراق</h3>
     <p id="help-text" class="dynamic-dir">
-      اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان (?) عبر أزرار الأرقام بالأسفل لتجاوز الجدار الناري قبل نفاد الوقت!
+      اكتشف النمط الرياضي السري المخفي. الصعوبة تزداد كلما صعدت للمستوى التالي. أدخل الرقم المفقود مكان (?) عبر الأزرار قبل نفاد طاقة الجدار الناري!
     </p>
     <button onclick="toggleHelp()" id="close-help-btn">تأكيد وإغلاق</button>
   </div>
@@ -368,13 +365,13 @@
       </div>
     </div>
 
-    <!-- مؤشر الليزر النيون الأصفر المشع والمتحرك -->
+    <!-- مؤشر الوقت الأصفر النيون المشع -->
     <div class="progress-container">
       <div id="timer-bar"></div>
     </div>
     <div class="timer-label dynamic-dir">
       <span id="label-time">الوقت:</span> 
-      <bdi id="time-val">15</bdi><span id="time-unit">ثا</span>
+      <bdi id="time-val">18</bdi><span id="time-unit">ثا</span>
     </div>
 
     <div class="terminal-screen" id="terminal-box">
@@ -383,7 +380,6 @@
         <button id="hint-btn" onclick="useHint()">💡 تلميح (-5 ثوان)</button>
       </div>
 
-      <!-- بطاقة المتتالية لملء الفراغ وإبراز الأرقام -->
       <div class="sequence-card">
         <div id="sequence-display" dir="ltr"></div>
       </div>
@@ -396,7 +392,6 @@
         <button id="submit-btn" onclick="checkAnswer()">تنفيذ</button>
       </div>
 
-      <!-- لوحة أرقام لمسية مرتفعة ومريحة للأصابع -->
       <div class="cyber-keys-compact" dir="ltr">
         <div class="keys-row">
           <button type="button" class="num-key" onclick="pressPad('1')">1</button>
@@ -465,6 +460,11 @@
       playTone(523.25, 'triangle', 0.08);
       setTimeout(() => playTone(659.25, 'triangle', 0.12), 80);
       setTimeout(() => playTone(1046.50, 'triangle', 0.18), 160);
+    } else if (name === 'levelup') {
+      playTone(440, 'square', 0.1, 0.06);
+      setTimeout(() => playTone(554.37, 'square', 0.1, 0.07), 90);
+      setTimeout(() => playTone(659.25, 'square', 0.1, 0.08), 180);
+      setTimeout(() => playTone(880, 'square', 0.25, 0.1), 270);
     } else if (name === 'wrong') {
       playTone(180, 'sawtooth', 0.12, 0.1);
       setTimeout(() => playTone(120, 'sawtooth', 0.2, 0.12), 100);
@@ -503,7 +503,7 @@
       gameTitle: "[ اختراق المتتاليات ]",
       helpBtn: "[?] دليل النظام",
       helpTitle: "⚠️ تعليمات الاختراق",
-      helpText: "اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان (?) عبر أزرار الأرقام بالأسفل لتجاوز الجدار الناري قبل نفاد الوقت!",
+      helpText: "اكتشف النمط الرياضي السري المخفي. الصعوبة تزداد كلما صعدت للمستوى التالي. أدخل الرقم المفقود مكان (?) عبر الأزرار قبل نفاد الوقت!",
       score: "النقاط:",
       high: "الرقم القياسي:",
       level: "المستوى:",
@@ -519,6 +519,7 @@
       reboot: "إعادة الإقلاع",
       close: "تأكيد وإغلاق",
       correct: ">> وصول مصرح به",
+      levelup: ">> ترقية مستوى الأمان!",
       wrong: ">> فشل التخطي",
       timeout: ">> انتهى الوقت",
       patternLocked: "[ تشفير نشط ]"
@@ -527,7 +528,7 @@
       gameTitle: "[ SEQUENCE HACKER ]",
       helpBtn: "[?] SYSTEM MANUAL",
       helpTitle: "⚠️ HACKING INSTRUCTIONS",
-      helpText: "Identify the hidden mathematical pattern. Enter the missing number (?) using the keypad before time runs out!",
+      helpText: "Identify the hidden mathematical pattern. Difficulty increases with each level. Enter the missing number (?) before firewall locks!",
       score: "SCORE:",
       high: "RECORD:",
       level: "LEVEL:",
@@ -543,6 +544,7 @@
       reboot: "REBOOT_SYSTEM",
       close: "CONFIRM & CLOSE",
       correct: ">> ACCESS GRANTED",
+      levelup: ">> SECURITY LEVEL UPGRADED!",
       wrong: ">> ACCESS DENIED",
       timeout: ">> TIMEOUT",
       patternLocked: "[ ENCRYPTED NODE ]"
@@ -551,7 +553,7 @@
       gameTitle: "[ PIRATAGE DE SÉQUENCE ]",
       helpBtn: "[?] MANUEL SYSTÈME",
       helpTitle: "⚠️ INSTRUCTIONS DE PIRATAGE",
-      helpText: "Découvrez le modèle mathématique caché. Entrez le nombre manquant (?) via le clavier avant la fin du temps imparti!",
+      helpText: "Découvrez le modèle mathématique caché. La difficulté augmente à chaque niveau. Entrez le nombre manquant (?) avant la fin du temps!",
       score: "SCORE:",
       high: "RECORD:",
       level: "NIVEAU:",
@@ -567,6 +569,7 @@
       reboot: "REDÉMARRAGE",
       close: "FERMER",
       correct: ">> ACCÈS AUTORISÉ",
+      levelup: ">> NIVEAU SUPÉRIEUR DÉVERROUILLÉ!",
       wrong: ">> ACCÈS REFUSÉ",
       timeout: ">> TEMPS ÉCOULÉ",
       patternLocked: "[ CHIFFREMENT ACTIF ]"
@@ -575,8 +578,9 @@
 
   let currentLang = 'ar';
   let score = 0, level = 1, lives = 3, correctAnswer = 0;
-  let timeLeft = 15, maxLevelTime = 15, timerInterval = null;
+  let timeLeft = 18, maxLevelTime = 18, timerInterval = null;
   let combo = 0, currentHint = "";
+  let correctStreak = 0;
   let highScore = parseInt(localStorage.getItem('seq_hack_highscore')) || 0;
 
   function changeLang(lang) {
@@ -623,7 +627,8 @@
 
   function startTimer() {
     clearInterval(timerInterval);
-    maxLevelTime = Math.max(8, 17 - level);
+    // الوقت يتناقص مع تقدم المستوى: يبدأ بـ 18 ثانية ويصل لـ 10 كحد أدنى في المستويات العليا
+    maxLevelTime = Math.max(10, 19 - level);
     timeLeft = maxLevelTime;
     updateTimerVisuals();
 
@@ -650,6 +655,7 @@
     }
   }
 
+  // محرك توليد المتتاليات التدريجي حسب المستوى
   function generateSequence() {
     startTimer();
     let sequence = [];
@@ -657,51 +663,93 @@
     currentHint = "";
     document.getElementById('pattern-type-tag').innerText = dict[currentLang].patternLocked;
 
-    let types = ['linear'];
-    if (level >= 2) types.push('alternating');
-    if (level >= 3) types.push('geometric');
-    if (level >= 4) types.push('fibonacci');
-    if (level >= 5) types.push('squares');
-
-    let pattern = types[Math.floor(Math.random() * types.length)];
-
-    if (pattern === 'linear') {
-      let start = Math.floor(Math.random() * 20) + 1;
-      let step = (Math.floor(Math.random() * 7) + 2) * (level > 2 && Math.random() > 0.5 ? -1 : 1);
+    // المستوى 1: قفزات جمع بسيطة وثابتة (+1, +2, +3, +5, +10)
+    if (level === 1) {
+      let allowedSteps = [1, 2, 3, 5, 10];
+      let step = allowedSteps[Math.floor(Math.random() * allowedSteps.length)];
+      let start = Math.floor(Math.random() * 15) + 1;
       for (let i = 0; i < seqLength; i++) sequence.push(start + (i * step));
-      currentHint = currentLang === 'ar' ? `خطوة (${step > 0 ? '+' : ''}${step})` : `Step: ${step}`;
+      currentHint = currentLang === 'ar' ? `زيادة ثابتة (+${step})` : `Constant add (+${step})`;
     } 
-    else if (pattern === 'alternating') {
-      let val = Math.floor(Math.random() * 10) + 2;
-      let add = Math.floor(Math.random() * 4) + 2;
-      let mul = 2;
-      sequence.push(val);
-      for (let i = 1; i < seqLength; i++) {
-        val = (i % 2 === 1) ? val + add : val * mul;
-        sequence.push(val);
+    // المستوى 2: جمع أكبر أو طرح (أعداد متناقصة -2, -3, -5)
+    else if (level === 2) {
+      let isSubtract = Math.random() > 0.45;
+      if (isSubtract) {
+        let step = Math.floor(Math.random() * 5) + 2; // 2 إلى 6
+        let start = (Math.floor(Math.random() * 15) + 30);
+        for (let i = 0; i < seqLength; i++) sequence.push(start - (i * step));
+        currentHint = currentLang === 'ar' ? `طرح ثابت (-${step})` : `Constant minus (-${step})`;
+      } else {
+        let step = Math.floor(Math.random() * 7) + 3; // 3 إلى 9
+        let start = Math.floor(Math.random() * 25) + 5;
+        for (let i = 0; i < seqLength; i++) sequence.push(start + (i * step));
+        currentHint = currentLang === 'ar' ? `زيادة بمقدار (+${step})` : `Add (+${step})`;
       }
-      currentHint = currentLang === 'ar' ? `تبادلي (+${add} ثم ×${mul})` : `Alternating (+${add}, *${mul})`;
+    } 
+    // المستوى 3: متتاليات هندسية بسيطة أو متتالية قفزات متزايدة (+1, +2, +3, +4...)
+    else if (level === 3) {
+      let type = Math.random() > 0.5 ? 'step_diff' : 'geometric_simple';
+      if (type === 'step_diff') {
+        let start = Math.floor(Math.random() * 10) + 1;
+        let delta = Math.floor(Math.random() * 3) + 1;
+        let current = start;
+        sequence.push(current);
+        for (let i = 1; i < seqLength; i++) {
+          current += delta;
+          delta += 1;
+          sequence.push(current);
+        }
+        currentHint = currentLang === 'ar' ? "الفرق بين الأعداد يزداد بمقدار 1" : "Difference increases by 1";
+      } else {
+        let start = Math.floor(Math.random() * 4) + 1;
+        let ratio = 2; // تضاعف بالضرب في 2
+        for (let i = 0; i < seqLength; i++) sequence.push(start * Math.pow(ratio, i));
+        currentHint = currentLang === 'ar' ? "مضاعفة العدد (ضرب في 2)" : "Doubling pattern (x2)";
+      }
     }
-    else if (pattern === 'geometric') {
-      let start = Math.floor(Math.random() * 4) + 1;
-      let ratio = Math.random() > 0.6 ? 3 : 2;
-      for (let i = 0; i < seqLength; i++) sequence.push(start * Math.pow(ratio, i));
-      currentHint = currentLang === 'ar' ? `ضرب في (${ratio})` : `Multiply: x${ratio}`;
+    // المستوى 4: فيبوناتشي أو عمليات تبادلية مركبة (+A ثم +B)
+    else if (level === 4) {
+      let type = Math.random() > 0.5 ? 'fibonacci' : 'alternating_add';
+      if (type === 'fibonacci') {
+        let a = Math.floor(Math.random() * 4) + 1;
+        let b = a + Math.floor(Math.random() * 3) + 1;
+        sequence = [a, b];
+        for (let i = 2; i < seqLength; i++) sequence.push(sequence[i - 1] + sequence[i - 2]);
+        currentHint = currentLang === 'ar' ? "كل عدد = مجموع العددين السابقين" : "Each = sum of previous two";
+      } else {
+        let start = Math.floor(Math.random() * 15) + 2;
+        let step1 = Math.floor(Math.random() * 3) + 2;
+        let step2 = step1 + (Math.floor(Math.random() * 3) + 2);
+        let cur = start;
+        sequence.push(cur);
+        for (let i = 1; i < seqLength; i++) {
+          cur += (i % 2 === 1) ? step1 : step2;
+          sequence.push(cur);
+        }
+        currentHint = currentLang === 'ar' ? `نمط تبادلي (+${step1} ثم +${step2})` : `Alternating (+${step1}, +${step2})`;
+      }
     }
-    else if (pattern === 'fibonacci') {
-      let a = Math.floor(Math.random() * 4) + 1;
-      let b = a + Math.floor(Math.random() * 3) + 1;
-      sequence = [a, b];
-      for (let i = 2; i < seqLength; i++) sequence.push(sequence[i - 1] + sequence[i - 2]);
-      currentHint = currentLang === 'ar' ? "مجموع الرقمين السابقين" : "Sum of previous two";
-    }
-    else if (pattern === 'squares') {
-      let offset = Math.floor(Math.random() * 5);
-      let base = Math.floor(Math.random() * 3) + 1;
-      for (let i = 0; i < seqLength; i++) sequence.push(Math.pow(base + i, 2) + offset);
-      currentHint = currentLang === 'ar' ? `مربعات n² ${offset > 0 ? '+' + offset : ''}` : `Square: n² + ${offset}`;
+    // المستوى 5 فما فوق: مربعات الأعداد (n² ± k) أو ضرب وتبادل متقدم
+    else {
+      let type = Math.random() > 0.5 ? 'squares' : 'geometric_mixed';
+      if (type === 'squares') {
+        let offset = (Math.floor(Math.random() * 4)) * (Math.random() > 0.5 ? 1 : -1);
+        let base = Math.floor(Math.random() * 3) + 1;
+        for (let i = 0; i < seqLength; i++) sequence.push(Math.pow(base + i, 2) + offset);
+        currentHint = currentLang === 'ar' ? `مربعات أعداد متتالية (n² ${offset >= 0 ? '+' + offset : offset})` : `Consecutive squares: n² + ${offset}`;
+      } else {
+        let cur = Math.floor(Math.random() * 5) + 2;
+        let add = Math.floor(Math.random() * 3) + 1;
+        sequence.push(cur);
+        for (let i = 1; i < seqLength; i++) {
+          cur = (i % 2 === 1) ? cur * 2 : cur + add;
+          sequence.push(cur);
+        }
+        currentHint = currentLang === 'ar' ? `نمط مركب (×2 ثم +${add})` : `Alternating (x2 then +${add})`;
+      }
     }
 
+    // إخفاء رقم عشوائي
     let hiddenIndex = Math.floor(Math.random() * (seqLength - 1)) + 1;
     correctAnswer = sequence[hiddenIndex];
     sequence[hiddenIndex] = "?";
@@ -719,7 +767,7 @@
       timeLeft -= 5;
       updateTimerVisuals();
       document.getElementById('pattern-type-tag').innerText = `[ ${currentHint} ]`;
-      document.getElementById('pattern-type-tag').style.color = '#ffaa00';
+      document.getElementById('pattern-type-tag').style.color = '#ffe600';
     }
   }
 
@@ -732,7 +780,8 @@
 
     if (userAnswer === correctAnswer) {
       combo++;
-      let bonusPoints = Math.round((15 + level * 3) * (1 + (combo - 1) * 0.25));
+      correctStreak++;
+      let bonusPoints = Math.round((15 + level * 5) * (1 + (combo - 1) * 0.25));
       score += bonusPoints;
       
       if (score > highScore) {
@@ -744,22 +793,28 @@
       document.getElementById("combo-display").innerText = `COMBO x${combo}`;
       document.getElementById("score-val").innerText = score;
 
-      feedback.innerText = `${dict[currentLang].correct} (+${bonusPoints} PT)`;
-      feedback.className = "msg-correct dynamic-dir center-text";
-      playSound('correct');
-
-      if (score >= level * 65) {
+      // ترقية المستوى كل 3 إجابات صحيحة
+      if (correctStreak >= 3) {
+        correctStreak = 0;
         level++;
         document.getElementById("level-val").innerText = level;
+        playSound('levelup');
+        feedback.innerText = `${dict[currentLang].levelup} (LVL ${level})`;
+        feedback.className = "msg-correct dynamic-dir center-text";
+      } else {
+        playSound('correct');
+        feedback.innerText = `${dict[currentLang].correct} (+${bonusPoints} PT)`;
+        feedback.className = "msg-correct dynamic-dir center-text";
       }
 
       setTimeout(() => {
         feedback.innerText = "";
         generateSequence();
-      }, 700);
+      }, 750);
 
     } else {
       combo = 0;
+      correctStreak = 0;
       document.getElementById("combo-display").innerText = `COMBO x1`;
       handleWrongAnswer(dict[currentLang].wrong);
     }
@@ -818,6 +873,7 @@
     level = 1;
     lives = 3;
     combo = 0;
+    correctStreak = 0;
     document.getElementById("combo-display").innerText = `COMBO x1`;
     document.getElementById("score-val").innerText = score;
     document.getElementById("level-val").innerText = level;
