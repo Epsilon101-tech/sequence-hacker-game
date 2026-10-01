@@ -19,7 +19,7 @@
   <div id="help-modal" style="display: none;">
     <h3 id="help-title">⚠️ تعليمات الاختراق التكتيكي</h3>
     <p id="help-text" class="dynamic-dir">
-      اكتشف النمط الرياضي السري (حسابي، تضاعفي، فيبوناتشي، أو عمليات مركبة). أدخل الرقم المفقود مكان (?) قبل نفاد الطاقة. الإجابات المتتالية تمنحك مضاعف نقاط (COMBO).
+      اكتشف النمط الرياضي السري (حسابي، تضاعفي، فيبوناتشي، أو عمليات مركبة). أدخل الرقم المفقود مكان (?) عبر لوحة الأرقام قبل نفاد الطاقة!
     </p>
     <button onclick="toggleHelp()" id="close-help-btn">تأكيد وإغلاق</button>
   </div>
@@ -57,26 +57,45 @@
         <button id="hint-btn" onclick="useHint()">💡 تلميح (-5 ثوان)</button>
       </div>
 
+      <!-- عرض المتتالية -->
       <div id="sequence-display" dir="ltr"></div>
       
+      <!-- شريط الإدخال المحمي (بدون كيبورد هاتف) -->
       <div class="cmd-line" dir="ltr">
         <span class="prompt-arrow">➜</span>
         <div class="input-wrapper">
-          <input type="number" id="answer-input" placeholder="فك الشفرة..." autocomplete="off" inputmode="numeric">
+          <input type="text" id="answer-input" placeholder="استخدم اللوحة..." readonly inputmode="none">
         </div>
         <button id="submit-btn" onclick="checkAnswer()">EXEC</button>
       </div>
+
+      <!-- لوحة أرقام لمسية مدمجة (Cyber Numpad) -->
+      <div class="cyber-numpad" dir="ltr">
+        <button type="button" class="num-key" onclick="pressPad('1')">1</button>
+        <button type="button" class="num-key" onclick="pressPad('2')">2</button>
+        <button type="button" class="num-key" onclick="pressPad('3')">3</button>
+        <button type="button" class="num-key" onclick="pressPad('4')">4</button>
+        <button type="button" class="num-key" onclick="pressPad('5')">5</button>
+        <button type="button" class="num-key" onclick="pressPad('6')">6</button>
+        <button type="button" class="num-key" onclick="pressPad('7')">7</button>
+        <button type="button" class="num-key" onclick="pressPad('8')">8</button>
+        <button type="button" class="num-key" onclick="pressPad('9')">9</button>
+        <button type="button" class="num-key fn-key" onclick="pressPad('-')">-</button>
+        <button type="button" class="num-key" onclick="pressPad('0')">0</button>
+        <button type="button" class="num-key fn-key del-key" onclick="delPad()">⌫</button>
+      </div>
+
       <div id="feedback-msg" class="dynamic-dir"></div>
     </div>
   </div>
 
-  <!-- شاشة انتهاء المحاولات -->
+  <!-- شاشة انتهاء اللعبة -->
   <div id="game-over-ui" style="display: none;">
     <h1 id="go-title" class="fatal-error" dir="ltr">CRITICAL SYSTEM FAILURE</h1>
     <p id="go-desc" class="dynamic-dir">تم حظر العقدة وتفعيل جدار الحماية!</p>
     <div class="final-report dynamic-dir">
       <p class="report-item"><span id="go-score-label">النقاط النهائية:</span> <bdi id="final-score" class="num-highlight">0</bdi></p>
-      <p class="report-item"><span id="go-level-label">المستوى الذي تم الوصول إليه:</span> <bdi id="final-level" class="num-highlight">1</bdi></p>
+      <p class="report-item"><span id="go-level-label">المستوى المحقق:</span> <bdi id="final-level" class="num-highlight">1</bdi></p>
       <p class="report-item"><span id="go-high-label">أفضل رقم قياسي:</span> <bdi id="final-high" class="num-highlight">0</bdi></p>
     </div>
     <button class="reboot-btn dynamic-dir" id="restart-btn" onclick="restartGame()">
@@ -86,98 +105,93 @@
 </div>
 
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   
   #matrix-os-container {
     background-color: #030804;
     color: #00ff66;
     font-family: 'Consolas', 'Courier New', monospace;
     max-width: 100%;
-    width: 520px;
-    margin: 15px auto;
-    padding: 18px;
-    border: 1px solid #00ff66;
-    border-radius: 6px;
-    box-shadow: 0 0 25px rgba(0, 255, 102, 0.15), inset 0 0 15px rgba(0, 255, 102, 0.08);
+    width: 480px;
+    margin: 0 auto;
+    padding: 12px;
+    border: 1px solid #00ff6655;
+    border-radius: 4px;
     position: relative;
-    overflow: hidden;
+    user-select: none;
   }
 
-  /* خطوط CRT التلفزيونية القديمة */
   .crt-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-    background-size: 100% 4px;
+    background-size: 100% 3px;
     pointer-events: none;
     z-index: 100;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 
-  .sys-nav { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ff6644; padding-bottom: 10px; margin-bottom: 15px; }
+  .sys-nav { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ff6633; padding-bottom: 8px; margin-bottom: 10px; }
   .nav-right { display: flex; gap: 8px; }
   .lang-btns button, #help-btn, #close-help-btn, #audio-btn, #hint-btn {
     background: transparent;
     color: #00ff66;
     border: 1px solid #00ff66;
-    padding: 4px 8px;
+    padding: 4px 7px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 12px;
-    transition: all 0.2s ease;
+    font-size: 11px;
   }
   .lang-btns .active-lang, #submit-btn { background: #00ff66; color: #030804; font-weight: bold; }
-  .lang-btns button:hover, #help-btn:hover, #hint-btn:hover { background: #00ff6633; }
 
-  .game-header { border-bottom: 1px dashed #00ff6633; padding-bottom: 10px; margin-bottom: 15px; }
-  #main-game-title { margin: 0; font-size: 20px; letter-spacing: 1.5px; text-shadow: 0 0 10px #00ff66; font-weight: bold; }
+  .game-header { border-bottom: 1px dashed #00ff6633; padding-bottom: 8px; margin-bottom: 10px; }
+  #main-game-title { margin: 0; font-size: 18px; letter-spacing: 1px; text-shadow: 0 0 8px #00ff66; font-weight: bold; }
 
   #help-modal {
-    background: rgba(3, 8, 4, 0.96);
+    background: rgba(3, 8, 4, 0.98);
     border: 1px solid #00ff66;
     position: absolute;
-    top: 45px; left: 15px; right: 15px;
-    padding: 20px;
+    top: 40px; left: 10px; right: 10px;
+    padding: 15px;
     z-index: 110;
-    box-shadow: 0 0 25px #000;
+    box-shadow: 0 0 20px #000;
     text-align: center;
   }
 
-  .hud-bar { margin-bottom: 12px; }
-  .system-root { font-size: 12px; opacity: 0.85; display: flex; justify-content: space-between; align-items: center; }
-  .combo-badge { background: #00ff6622; border: 1px solid #00ff66; padding: 1px 6px; border-radius: 3px; font-weight: bold; color: #70ff94; }
+  .hud-bar { margin-bottom: 8px; }
+  .system-root { font-size: 11px; opacity: 0.85; display: flex; justify-content: space-between; align-items: center; }
+  .combo-badge { background: #00ff6622; border: 1px solid #00ff66; padding: 1px 5px; border-radius: 3px; font-weight: bold; }
 
-  .stats-box { display: flex; font-weight: bold; margin-top: 8px; font-size: 13px; flex-wrap: wrap; gap: 12px; }
-  .stat-item { display: flex; gap: 5px; align-items: center; }
+  .stats-box { display: flex; font-weight: bold; margin-top: 6px; font-size: 12px; flex-wrap: wrap; gap: 10px; }
+  .stat-item { display: flex; gap: 4px; align-items: center; }
   .hearts { letter-spacing: 2px; }
 
-  .progress-container { width: 100%; height: 6px; border: 1px solid #00ff6655; background: #001505; margin-bottom: 4px; border-radius: 2px; }
-  #timer-bar { height: 100%; width: 100%; background: #00ff66; transition: width 1s linear, background-color 0.3s; }
-
-  .timer-label { font-size: 12px; margin-bottom: 12px; display: flex; gap: 6px; }
+  .progress-container { width: 100%; height: 5px; border: 1px solid #00ff6644; background: #001505; margin-bottom: 4px; }
+  #timer-bar { height: 100%; width: 100%; background: #00ff66; transition: width 1s linear; }
+  .timer-label { font-size: 11px; margin-bottom: 10px; display: flex; gap: 5px; }
 
   .terminal-screen {
-    background: #000c02;
-    border: 1px solid #00ff6644;
-    padding: 16px;
-    box-shadow: inset 0 0 10px rgba(0, 255, 102, 0.05);
+    background: #000b02;
+    border: 1px solid #00ff6633;
+    padding: 12px 10px;
   }
 
-  .pattern-hint-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 12px; opacity: 0.8; }
+  .pattern-hint-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 11px; opacity: 0.85; }
+  
   #sequence-display {
-    font-size: clamp(22px, 6.5vw, 30px);
+    font-size: clamp(20px, 6vw, 26px);
     text-align: center;
-    margin: 15px 0 25px 0;
+    margin: 10px 0 15px 0;
     text-shadow: 0 0 8px #00ff66;
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
     font-weight: bold;
   }
 
-  .cmd-line { display: flex; align-items: center; gap: 10px; width: 100%; }
-  .prompt-arrow { color: #00ff66; font-size: 18px; }
+  .cmd-line { display: flex; align-items: center; gap: 8px; width: 100%; margin-bottom: 12px; }
+  .prompt-arrow { color: #00ff66; font-size: 16px; }
   .input-wrapper { flex-grow: 1; }
   #answer-input {
     width: 100%;
@@ -186,45 +200,84 @@
     border: none;
     border-bottom: 2px solid #00ff66;
     font-size: 18px;
-    padding: 6px;
+    padding: 4px;
     outline: none;
     font-family: inherit;
     text-align: center;
+    cursor: default;
   }
-  #submit-btn { border: none; padding: 8px 16px; cursor: pointer; font-family: inherit; }
-  #submit-btn:hover { background: #fff; color: #000; box-shadow: 0 0 10px #fff; }
+  #submit-btn { border: none; padding: 6px 14px; cursor: pointer; font-family: inherit; }
+  #submit-btn:active { background: #fff; color: #000; }
 
-  #feedback-msg { margin-top: 15px; font-size: 14px; min-height: 22px; font-weight: bold; }
+  /* لوحة الأرقام اللمسية المدمجة */
+  .cyber-numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  .num-key {
+    background: #021606;
+    color: #00ff66;
+    border: 1px solid #00ff6655;
+    padding: 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: manipulation;
+  }
+  .num-key:active {
+    background: #00ff66;
+    color: #000;
+  }
+  .fn-key {
+    background: #012009;
+    color: #88ffaa;
+  }
+  .del-key {
+    color: #ff5566;
+    border-color: #ff556655;
+  }
+  .del-key:active {
+    background: #ff3344;
+    color: #000;
+  }
+
+  #feedback-msg { margin-top: 10px; font-size: 13px; min-height: 20px; font-weight: bold; text-align: center; }
   .msg-correct { color: #00ff66; text-shadow: 0 0 5px #00ff66; }
   .msg-wrong { color: #ff3344; text-shadow: 0 0 5px #ff3344; }
 
   #game-over-ui { text-align: center; padding: 15px 5px; }
-  .fatal-error { color: #ff3344; text-shadow: 0 0 12px #ff3344; margin-bottom: 10px; font-size: 24px; }
-  .final-report { border: 1px solid #ff334455; padding: 15px; margin: 20px 0; background: #140204; display: flex; flex-direction: column; gap: 8px; }
-  .report-item { margin: 0; font-size: 15px; display: flex; gap: 10px; justify-content: center; }
+  .fatal-error { color: #ff3344; text-shadow: 0 0 10px #ff3344; margin-bottom: 10px; font-size: 22px; }
+  .final-report { border: 1px solid #ff334455; padding: 12px; margin: 15px 0; background: #140204; display: flex; flex-direction: column; gap: 6px; }
+  .report-item { margin: 0; font-size: 14px; display: flex; gap: 8px; justify-content: center; }
 
   .reboot-btn {
     background: transparent;
     color: #ff3344;
     border: 1px solid #ff3344;
     padding: 10px;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
     font-family: inherit;
     width: 100%;
     display: flex;
     justify-content: center;
     gap: 8px;
-    transition: 0.2s;
   }
-  .reboot-btn:hover { background: #ff3344; color: #000; box-shadow: 0 0 15px #ff3344; }
+  .reboot-btn:active { background: #ff3344; color: #000; }
 
-  /* ارتداد عند الخطأ */
-  .screen-shake { animation: shake 0.35s ease-in-out; }
+  .screen-shake { animation: shake 0.3s ease-in-out; }
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
   }
 
   .rtl-mode { direction: rtl; text-align: right; }
@@ -233,14 +286,11 @@
 </style>
 
 <script>
-  // نظام المؤثرات الصوتية الافتراضي (Web Audio API)
   let audioEnabled = true;
   let audioCtx = null;
 
   function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
   function playTone(freq, type, duration, gainVal = 0.08) {
@@ -264,16 +314,15 @@
     if (!audioEnabled) return;
     if (name === 'correct') {
       playTone(523.25, 'triangle', 0.1);
-      setTimeout(() => playTone(659.25, 'triangle', 0.15), 100);
-      setTimeout(() => playTone(1046.50, 'triangle', 0.2), 200);
+      setTimeout(() => playTone(659.25, 'triangle', 0.15), 90);
+      setTimeout(() => playTone(1046.50, 'triangle', 0.2), 180);
     } else if (name === 'wrong') {
-      playTone(180, 'sawtooth', 0.2, 0.12);
-      setTimeout(() => playTone(130, 'sawtooth', 0.3, 0.15), 150);
+      playTone(180, 'sawtooth', 0.15, 0.1);
+      setTimeout(() => playTone(120, 'sawtooth', 0.25, 0.12), 120);
     } else if (name === 'click') {
-      playTone(800, 'sine', 0.03, 0.03);
+      playTone(700, 'sine', 0.03, 0.04);
     } else if (name === 'over') {
-      playTone(250, 'sawtooth', 0.3, 0.15);
-      setTimeout(() => playTone(180, 'sawtooth', 0.5, 0.15), 300);
+      playTone(250, 'sawtooth', 0.3, 0.12);
     }
   }
 
@@ -282,19 +331,37 @@
     document.getElementById('audio-btn').innerText = audioEnabled ? '🔊' : '🔇';
   }
 
-  // الترجمة واللغات
+  // دوال لوحة الأرقام اللمسية المدمجة
+  function pressPad(char) {
+    playSound('click');
+    let input = document.getElementById("answer-input");
+    if (char === '-') {
+      if (input.value === "") input.value = "-";
+      return;
+    }
+    if (input.value.length < 7) {
+      input.value += char;
+    }
+  }
+
+  function delPad() {
+    playSound('click');
+    let input = document.getElementById("answer-input");
+    input.value = input.value.slice(0, -1);
+  }
+
   const dict = {
     ar: {
       gameTitle: "[ اختراق المتتاليات v2.0 ]",
       helpBtn: "[?] دليل النظام",
       helpTitle: "⚠️ تعليمات الاختراق التكتيكي",
-      helpText: "اكتشف النمط الرياضي السري (حسابي، تضاعفي، فيبوناتشي، أو عمليات مركبة). أدخل الرقم المفقود مكان (?) قبل نفاد الطاقة. الإجابات المتتالية تمنحك مضاعف نقاط (COMBO).",
+      helpText: "اكتشف النمط الرياضي السري. أدخل الرقم المفقود مكان (?) عبر لوحة الأرقام قبل نفاد الوقت لتجاوز الجدار الناري.",
       score: "النقاط:",
       high: "الرقم القياسي:",
       level: "المستوى:",
       time: "الوقت المتبقي:",
       timeUnit: "ثا",
-      placeholder: "فك الشفرة...",
+      placeholder: "استخدم اللوحة...",
       exec: "تنفيذ",
       hintBtn: "💡 تلميح (-5 ثوان)",
       goDesc: "تم حظر العقدة وتفعيل جدار الحماية!",
@@ -303,8 +370,8 @@
       goHigh: "أفضل رقم قياسي:",
       reboot: "إعادة الإقلاع",
       close: "تأكيد وإغلاق",
-      correct: ">> وصول مصرح به. تشفير مكتمل.",
-      wrong: ">> تم رصد محاولة غير شرعية!",
+      correct: ">> تم فك التشفير بنجاح",
+      wrong: ">> فشل تجاوز الجدار الناري!",
       timeout: ">> نفدت طاقة المعالجة!",
       patternLocked: "[ تشفير نشط ]"
     },
@@ -312,13 +379,13 @@
       gameTitle: "[ SEQUENCE HACKER v2.0 ]",
       helpBtn: "[?] SYSTEM MANUAL",
       helpTitle: "⚠️ TACTICAL INSTRUCTIONS",
-      helpText: "Identify mathematical patterns (linear, geometric, Fibonacci, alternating). Solve (?) before CPU drains. Chaining solutions increases your COMBO multiplier!",
+      helpText: "Solve the secret math pattern. Use the keypad to input the missing digit (?) before time runs out.",
       score: "SCORE:",
       high: "RECORD:",
       level: "LEVEL:",
       time: "TIME LEFT:",
       timeUnit: "s",
-      placeholder: "Enter decrypted key...",
+      placeholder: "Use keypad...",
       exec: "EXEC",
       hintBtn: "💡 HINT (-5s)",
       goDesc: "INTRUSION BLOCKED! PORTS SEALED!",
@@ -327,7 +394,7 @@
       goHigh: "BEST RECORD:",
       reboot: "SYSTEM REBOOT",
       close: "CONFIRM & CLOSE",
-      correct: ">> ACCESS GRANTED. PROCEED.",
+      correct: ">> ACCESS GRANTED. NODE BREACHED.",
       wrong: ">> BREACH DENIED!",
       timeout: ">> CPU OVERLOAD TIMEOUT!",
       patternLocked: "[ ENCRYPTED NODE ]"
@@ -336,13 +403,13 @@
       gameTitle: "[ PIRATAGE DE SÉQUENCE v2.0 ]",
       helpBtn: "[?] MANUEL SYSTÈME",
       helpTitle: "⚠️ INSTRUCTIONS TACTIQUES",
-      helpText: "Identifiez les suites mathématiques (linéaires, géométriques, Fibonacci, alternées). Trouvez (?) avant la coupure d'énergie.",
+      helpText: "Trouvez le nombre manquant (?) via le clavier tactile avant la coupure d'énergie.",
       score: "SCORE:",
       high: "RECORD:",
       level: "NIVEAU:",
       time: "TEMPS:",
       timeUnit: "s",
-      placeholder: "Décryptez le code...",
+      placeholder: "Utiliser clavier...",
       exec: "EXÉC",
       hintBtn: "💡 INDICE (-5s)",
       goDesc: "INTRUSION BLOQUÉE! PORTS SCELLÉS!",
@@ -351,7 +418,7 @@
       goHigh: "MEILLEUR RECORD:",
       reboot: "REDÉMARRAGE",
       close: "FERMER",
-      correct: ">> ACCÈS CONFIRMÉ. NŒUD FORCÉ.",
+      correct: ">> ACCÈS CONFIRMÉ.",
       wrong: ">> ACCÈS REFUSÉ!",
       timeout: ">> TEMPS ÉCOULÉ!",
       patternLocked: "[ CHIFFREMENT ACTIF ]"
@@ -431,7 +498,6 @@
     timerBar.style.background = timeLeft <= 4 ? "#ff3344" : "#00ff66";
   }
 
-  // مولد المتتاليات المتقدم
   function generateSequence() {
     startTimer();
     let sequence = [];
@@ -439,7 +505,6 @@
     currentHint = "";
     document.getElementById('pattern-type-tag').innerText = dict[currentLang].patternLocked;
 
-    // تحديد نوع النمط حسب المستوى
     let types = ['linear'];
     if (level >= 2) types.push('alternating');
     if (level >= 3) types.push('geometric');
@@ -452,7 +517,7 @@
       let start = Math.floor(Math.random() * 20) + 1;
       let step = (Math.floor(Math.random() * 7) + 2) * (level > 2 && Math.random() > 0.5 ? -1 : 1);
       for (let i = 0; i < seqLength; i++) sequence.push(start + (i * step));
-      currentHint = currentLang === 'ar' ? `خطوة جمع/طرح ثابتة (${step > 0 ? '+' : ''}${step})` : `Linear step: ${step}`;
+      currentHint = currentLang === 'ar' ? `خطوة جمع/طرح (${step > 0 ? '+' : ''}${step})` : `Linear step: ${step}`;
     } 
     else if (pattern === 'alternating') {
       let val = Math.floor(Math.random() * 10) + 2;
@@ -463,26 +528,26 @@
         val = (i % 2 === 1) ? val + add : val * mul;
         sequence.push(val);
       }
-      currentHint = currentLang === 'ar' ? `نمط تبادلي (+${add} ثم ×${mul})` : `Alternating (+${add}, *${mul})`;
+      currentHint = currentLang === 'ar' ? `تبادلي (+${add} ثم ×${mul})` : `Alternating (+${add}, *${mul})`;
     }
     else if (pattern === 'geometric') {
       let start = Math.floor(Math.random() * 4) + 1;
       let ratio = Math.random() > 0.6 ? 3 : 2;
       for (let i = 0; i < seqLength; i++) sequence.push(start * Math.pow(ratio, i));
-      currentHint = currentLang === 'ar' ? `ضرب مضاعف في (${ratio})` : `Geometric factor: x${ratio}`;
+      currentHint = currentLang === 'ar' ? `ضرب متسلسل في (${ratio})` : `Geometric factor: x${ratio}`;
     }
     else if (pattern === 'fibonacci') {
       let a = Math.floor(Math.random() * 4) + 1;
       let b = a + Math.floor(Math.random() * 3) + 1;
       sequence = [a, b];
       for (let i = 2; i < seqLength; i++) sequence.push(sequence[i - 1] + sequence[i - 2]);
-      currentHint = currentLang === 'ar' ? "كل عنصر = مجموع العنصرين السابقين" : "Sum of previous two numbers";
+      currentHint = currentLang === 'ar' ? "مجموع الرقمين السابقين" : "Sum of previous two";
     }
     else if (pattern === 'squares') {
       let offset = Math.floor(Math.random() * 5);
       let base = Math.floor(Math.random() * 3) + 1;
       for (let i = 0; i < seqLength; i++) sequence.push(Math.pow(base + i, 2) + offset);
-      currentHint = currentLang === 'ar' ? `مربعات الأرقام n² ${offset > 0 ? '+' + offset : ''}` : `Square pattern: n² + ${offset}`;
+      currentHint = currentLang === 'ar' ? `مربعات n² ${offset > 0 ? '+' + offset : ''}` : `Square pattern: n² + ${offset}`;
     }
 
     let hiddenIndex = Math.floor(Math.random() * (seqLength - 1)) + 1;
@@ -494,7 +559,6 @@
       .join('<span style="color:#00ff6644">,</span>');
 
     document.getElementById("answer-input").value = "";
-    document.getElementById("answer-input").focus();
   }
 
   function useHint() {
@@ -509,7 +573,7 @@
 
   function checkAnswer() {
     let inputVal = document.getElementById("answer-input").value.trim();
-    if (inputVal === "") return;
+    if (inputVal === "" || inputVal === "-") return;
     let userAnswer = parseInt(inputVal);
     let feedback = document.getElementById("feedback-msg");
     clearInterval(timerInterval);
@@ -556,7 +620,7 @@
 
     let term = document.getElementById('terminal-box');
     term.classList.add('screen-shake');
-    setTimeout(() => term.classList.remove('screen-shake'), 400);
+    setTimeout(() => term.classList.remove('screen-shake'), 350);
 
     let feedback = document.getElementById("feedback-msg");
     feedback.innerText = msg;
@@ -568,7 +632,7 @@
       setTimeout(() => {
         feedback.innerText = "";
         generateSequence();
-      }, 1100);
+      }, 1000);
     }
   }
 
@@ -606,14 +670,15 @@
     generateSequence();
   }
 
-  document.getElementById("answer-input").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      checkAnswer();
-    }
+  // دعم أزرار الكيبورد الفيزيائية لمن يلعب من الحاسوب
+  window.addEventListener("keydown", function(event) {
+    if (document.getElementById("game-ui").style.display === "none") return;
+    if (event.key >= '0' && event.key <= '9') pressPad(event.key);
+    else if (event.key === '-') pressPad('-');
+    else if (event.key === 'Backspace') delPad();
+    else if (event.key === 'Enter') checkAnswer();
   });
 
-  // التشغيل المبدئي
   document.getElementById("high-val").innerText = highScore;
   changeLang('ar');
   generateSequence();
