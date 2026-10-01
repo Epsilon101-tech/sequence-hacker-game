@@ -1,4 +1,7 @@
 <div id="matrix-os-container">
+  <!-- تأثير خطوط الشاشة CRT -->
+  <div class="crt-overlay"></div>
+
   <!-- شريط التحكم العلوي -->
   <div class="sys-nav">
     <div class="lang-btns">
@@ -6,46 +9,60 @@
       <button onclick="changeLang('en')" id="btn-en">EN</button>
       <button onclick="changeLang('fr')" id="btn-fr">FR</button>
     </div>
-    <button onclick="toggleHelp()" id="help-btn">[?] دليل النظام</button>
+    <div class="nav-right">
+      <button onclick="toggleAudio()" id="audio-btn" title="صوت النظام">🔊</button>
+      <button onclick="toggleHelp()" id="help-btn">[?] دليل النظام</button>
+    </div>
   </div>
 
-  <!-- نافذة شرح اللعبة -->
+  <!-- نافذة تعليمات النظام -->
   <div id="help-modal" style="display: none;">
-    <h3 id="help-title">⚠️ تعليمات الاختراق</h3>
-    <p id="help-text" class="dynamic-dir">اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان علامة الاستفهام (?) قبل انتهاء الوقت لتجاوز الجدار الناري. 3 أخطاء وتفقد الاتصال!</p>
-    <button onclick="toggleHelp()" id="close-help-btn">إغلاق</button>
+    <h3 id="help-title">⚠️ تعليمات الاختراق التكتيكي</h3>
+    <p id="help-text" class="dynamic-dir">
+      اكتشف النمط الرياضي السري (حسابي، تضاعفي، فيبوناتشي، أو عمليات مركبة). أدخل الرقم المفقود مكان (?) قبل نفاد الطاقة. الإجابات المتتالية تمنحك مضاعف نقاط (COMBO).
+    </p>
+    <button onclick="toggleHelp()" id="close-help-btn">تأكيد وإغلاق</button>
   </div>
 
-  <!-- عنوان اللعبة الديناميكي -->
+  <!-- ترويسة اللعبة -->
   <div class="game-header">
-    <h2 id="main-game-title" class="glitch-text center-text dynamic-dir">[ اختراق المتتاليات ]</h2>
+    <h2 id="main-game-title" class="glitch-text center-text">[ اختراق المتتاليات v2.0 ]</h2>
   </div>
 
-  <!-- الواجهة الرئيسية -->
+  <!-- الواجهة التفاعلية -->
   <div id="game-ui">
     <div class="hud-bar">
-      <span class="system-root" dir="ltr">ROOT@CYBER_NODE:~#</span>
+      <div class="system-root" dir="ltr">ROOT@CYBER_NODE:~$ <span id="combo-display" class="combo-badge">COMBO x1</span></div>
       <div class="stats-box dynamic-dir" id="top-stats">
         <div class="stat-item"><span id="label-score">النقاط:</span> <bdi id="score-val" class="num-highlight">0</bdi></div>
+        <div class="stat-item"><span id="label-high">الرقم القياسي:</span> <bdi id="high-val" class="num-highlight">0</bdi></div>
         <div class="stat-item"><span id="label-level">المستوى:</span> <bdi id="level-val" class="num-highlight">1</bdi></div>
         <div id="hearts-val" class="hearts" dir="ltr">███</div>
       </div>
     </div>
 
-    <!-- مؤشر الوقت -->
+    <!-- مؤشر الوقت التنازلي -->
     <div class="progress-container">
       <div id="timer-bar"></div>
     </div>
-    <div class="timer-label dynamic-dir"><span id="label-time">الوقت:</span> <bdi id="time-val">15</bdi><span id="time-unit">ثا</span></div>
+    <div class="timer-label dynamic-dir">
+      <span id="label-time">الوقت المتبقي:</span> 
+      <bdi id="time-val">15</bdi><span id="time-unit">ثا</span>
+    </div>
 
-    <!-- شاشة التيرمنال -->
-    <div class="terminal-screen">
+    <!-- شاشة المعالجة (التيرمنال) -->
+    <div class="terminal-screen" id="terminal-box">
+      <div class="pattern-hint-bar">
+        <span id="pattern-type-tag">[ تشفير نشط ]</span>
+        <button id="hint-btn" onclick="useHint()">💡 تلميح (-5 ثوان)</button>
+      </div>
+
       <div id="sequence-display" dir="ltr"></div>
       
       <div class="cmd-line" dir="ltr">
         <span class="prompt-arrow">➜</span>
         <div class="input-wrapper">
-          <input type="number" id="answer-input" placeholder="أدخل الرقم السري لفك التشفير..." autocomplete="off">
+          <input type="number" id="answer-input" placeholder="فك الشفرة..." autocomplete="off" inputmode="numeric">
         </div>
         <button id="submit-btn" onclick="checkAnswer()">EXEC</button>
       </div>
@@ -53,15 +70,18 @@
     </div>
   </div>
 
-  <!-- شاشة نهاية اللعبة -->
+  <!-- شاشة انتهاء المحاولات -->
   <div id="game-over-ui" style="display: none;">
-    <h1 id="go-title" class="fatal-error" dir="ltr">SYSTEM FAILURE</h1>
-    <p id="go-desc" class="dynamic-dir">تم رصد الاختراق وإغلاق المنافذ!</p>
+    <h1 id="go-title" class="fatal-error" dir="ltr">CRITICAL SYSTEM FAILURE</h1>
+    <p id="go-desc" class="dynamic-dir">تم حظر العقدة وتفعيل جدار الحماية!</p>
     <div class="final-report dynamic-dir">
       <p class="report-item"><span id="go-score-label">النقاط النهائية:</span> <bdi id="final-score" class="num-highlight">0</bdi></p>
-      <p class="report-item"><span id="go-level-label">مستوى الاختراق:</span> <bdi id="final-level" class="num-highlight">1</bdi></p>
+      <p class="report-item"><span id="go-level-label">المستوى الذي تم الوصول إليه:</span> <bdi id="final-level" class="num-highlight">1</bdi></p>
+      <p class="report-item"><span id="go-high-label">أفضل رقم قياسي:</span> <bdi id="final-high" class="num-highlight">0</bdi></p>
     </div>
-    <button class="reboot-btn dynamic-dir" id="restart-btn" onclick="restartGame()">إعادة الإقلاع</button>
+    <button class="reboot-btn dynamic-dir" id="restart-btn" onclick="restartGame()">
+      <span>⟲</span> <span id="reboot-txt">إعادة الإقلاع</span>
+    </button>
   </div>
 </div>
 
@@ -69,291 +89,517 @@
   * { box-sizing: border-box; }
   
   #matrix-os-container {
-    background-color: #050505;
-    color: #00ff41;
-    font-family: 'Courier New', Courier, monospace;
+    background-color: #030804;
+    color: #00ff66;
+    font-family: 'Consolas', 'Courier New', monospace;
     max-width: 100%;
-    width: 500px;
-    margin: 20px auto;
-    padding: 15px;
-    border: 1px solid #00ff41;
-    border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2), inset 0 0 10px rgba(0, 255, 65, 0.1);
+    width: 520px;
+    margin: 15px auto;
+    padding: 18px;
+    border: 1px solid #00ff66;
+    border-radius: 6px;
+    box-shadow: 0 0 25px rgba(0, 255, 102, 0.15), inset 0 0 15px rgba(0, 255, 102, 0.08);
     position: relative;
     overflow: hidden;
   }
 
-  /* شريط التحكم */
-  .sys-nav { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ff4144; padding-bottom: 10px; margin-bottom: 15px; }
-  .lang-btns button, #help-btn, #close-help-btn { background: transparent; color: #00ff41; border: 1px solid #00ff41; padding: 5px 8px; cursor: pointer; font-family: inherit; font-size: 13px; transition: 0.2s; }
-  .lang-btns .active-lang { background: #00ff41; color: #050505; font-weight: bold; }
-  
-  /* عنوان اللعبة */
-  .game-header { border-bottom: 1px dashed #00ff4144; padding-bottom: 15px; margin-bottom: 15px; }
-  #main-game-title { margin: 0; font-size: 22px; letter-spacing: 2px; text-shadow: 0 0 8px #00ff41; font-weight: bold; }
+  /* خطوط CRT التلفزيونية القديمة */
+  .crt-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.6;
+  }
 
-  #help-modal { background: rgba(5, 5, 5, 0.98); border: 1px solid #00ff41; position: absolute; top: 50px; left: 10px; right: 10px; padding: 20px; z-index: 10; box-shadow: 0 0 20px #000; text-align: center; }
+  .sys-nav { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ff6644; padding-bottom: 10px; margin-bottom: 15px; }
+  .nav-right { display: flex; gap: 8px; }
+  .lang-btns button, #help-btn, #close-help-btn, #audio-btn, #hint-btn {
+    background: transparent;
+    color: #00ff66;
+    border: 1px solid #00ff66;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    transition: all 0.2s ease;
+  }
+  .lang-btns .active-lang, #submit-btn { background: #00ff66; color: #030804; font-weight: bold; }
+  .lang-btns button:hover, #help-btn:hover, #hint-btn:hover { background: #00ff6633; }
 
-  .hud-bar { margin-bottom: 15px; }
-  .system-root { font-size: 13px; opacity: 0.8; }
-  
-  /* الإحصائيات */
-  .stats-box { display: flex; font-weight: bold; margin-top: 8px; font-size: 14px; flex-wrap: wrap; gap: 15px; }
-  .stats-box.rtl-mode { flex-direction: row-reverse; } 
-  .stats-box.ltr-mode { flex-direction: row; }
-  
+  .game-header { border-bottom: 1px dashed #00ff6633; padding-bottom: 10px; margin-bottom: 15px; }
+  #main-game-title { margin: 0; font-size: 20px; letter-spacing: 1.5px; text-shadow: 0 0 10px #00ff66; font-weight: bold; }
+
+  #help-modal {
+    background: rgba(3, 8, 4, 0.96);
+    border: 1px solid #00ff66;
+    position: absolute;
+    top: 45px; left: 15px; right: 15px;
+    padding: 20px;
+    z-index: 110;
+    box-shadow: 0 0 25px #000;
+    text-align: center;
+  }
+
+  .hud-bar { margin-bottom: 12px; }
+  .system-root { font-size: 12px; opacity: 0.85; display: flex; justify-content: space-between; align-items: center; }
+  .combo-badge { background: #00ff6622; border: 1px solid #00ff66; padding: 1px 6px; border-radius: 3px; font-weight: bold; color: #70ff94; }
+
+  .stats-box { display: flex; font-weight: bold; margin-top: 8px; font-size: 13px; flex-wrap: wrap; gap: 12px; }
   .stat-item { display: flex; gap: 5px; align-items: center; }
-  .hearts { letter-spacing: 3px; }
+  .hearts { letter-spacing: 2px; }
 
-  /* الوقت */
-  .progress-container { width: 100%; height: 8px; border: 1px solid #00ff41; padding: 1px; margin-bottom: 5px; }
-  #timer-bar { height: 100%; width: 100%; background: #00ff41; transition: width 1s linear; }
-  
-  .timer-label { font-size: 12px; margin-bottom: 15px; display: flex; gap: 5px; }
-  .timer-label.rtl-mode { flex-direction: row-reverse; }
-  .timer-label.ltr-mode { justify-content: flex-end; }
+  .progress-container { width: 100%; height: 6px; border: 1px solid #00ff6655; background: #001505; margin-bottom: 4px; border-radius: 2px; }
+  #timer-bar { height: 100%; width: 100%; background: #00ff66; transition: width 1s linear, background-color 0.3s; }
 
-  /* التيرمنال */
-  .terminal-screen { background: #000; border: 1px dashed #00ff4155; padding: 20px 15px; width: 100%; }
+  .timer-label { font-size: 12px; margin-bottom: 12px; display: flex; gap: 6px; }
 
-  #sequence-display { font-size: clamp(20px, 6vw, 28px); text-align: center; margin-bottom: 25px; text-shadow: 0 0 5px #00ff41; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+  .terminal-screen {
+    background: #000c02;
+    border: 1px solid #00ff6644;
+    padding: 16px;
+    box-shadow: inset 0 0 10px rgba(0, 255, 102, 0.05);
+  }
+
+  .pattern-hint-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 12px; opacity: 0.8; }
+  #sequence-display {
+    font-size: clamp(22px, 6.5vw, 30px);
+    text-align: center;
+    margin: 15px 0 25px 0;
+    text-shadow: 0 0 8px #00ff66;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-weight: bold;
+  }
 
   .cmd-line { display: flex; align-items: center; gap: 10px; width: 100%; }
-  .input-wrapper { flex-grow: 1; min-width: 0; }
-  
-  #answer-input { width: 100%; background: #000; color: #00ff41; border: none; border-bottom: 2px solid #00ff41; font-size: 15px; padding: 5px; outline: none; font-family: inherit; text-align: center; }
-  #submit-btn { background: #00ff41; color: #000; border: none; padding: 8px 12px; font-weight: bold; cursor: pointer; font-family: inherit; flex-shrink: 0; }
-  #submit-btn:hover { background: #fff; }
+  .prompt-arrow { color: #00ff66; font-size: 18px; }
+  .input-wrapper { flex-grow: 1; }
+  #answer-input {
+    width: 100%;
+    background: transparent;
+    color: #00ff66;
+    border: none;
+    border-bottom: 2px solid #00ff66;
+    font-size: 18px;
+    padding: 6px;
+    outline: none;
+    font-family: inherit;
+    text-align: center;
+  }
+  #submit-btn { border: none; padding: 8px 16px; cursor: pointer; font-family: inherit; }
+  #submit-btn:hover { background: #fff; color: #000; box-shadow: 0 0 10px #fff; }
 
-  #feedback-msg { margin-top: 15px; font-size: 14px; min-height: 20px; text-align: center; }
-  .msg-correct { color: #00ff41; }
-  .msg-wrong { color: #ff003c; }
+  #feedback-msg { margin-top: 15px; font-size: 14px; min-height: 22px; font-weight: bold; }
+  .msg-correct { color: #00ff66; text-shadow: 0 0 5px #00ff66; }
+  .msg-wrong { color: #ff3344; text-shadow: 0 0 5px #ff3344; }
 
-  /* نهاية اللعبة */
-  #game-over-ui { text-align: center; padding: 20px 10px; }
-  .fatal-error { color: #ff003c; text-shadow: 0 0 10px #ff003c; margin-bottom: 10px; font-size: 28px;}
-  
-  .final-report { border: 1px solid #ff003c55; padding: 15px; margin: 20px 0; background: #110000; display: flex; flex-direction: column; gap: 10px; }
-  .report-item { margin: 0; font-size: 16px; display: flex; gap: 10px; justify-content: center;}
-  .final-report.rtl-mode .report-item { flex-direction: row-reverse; }
-  
-  .num-highlight { color: #00ff41; font-weight: bold; }
+  #game-over-ui { text-align: center; padding: 15px 5px; }
+  .fatal-error { color: #ff3344; text-shadow: 0 0 12px #ff3344; margin-bottom: 10px; font-size: 24px; }
+  .final-report { border: 1px solid #ff334455; padding: 15px; margin: 20px 0; background: #140204; display: flex; flex-direction: column; gap: 8px; }
+  .report-item { margin: 0; font-size: 15px; display: flex; gap: 10px; justify-content: center; }
 
-  .reboot-btn { background: transparent; color: #ff003c; border: 1px solid #ff003c; padding: 10px 20px; font-size: 16px; cursor: pointer; font-family: inherit; width: 100%; display: flex; justify-content: center; gap: 10px; align-items: center;}
-  .reboot-btn.rtl-mode { flex-direction: row-reverse; }
-  .reboot-btn:hover { background: #ff003c; color: #000; }
-  
+  .reboot-btn {
+    background: transparent;
+    color: #ff3344;
+    border: 1px solid #ff3344;
+    padding: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
+  }
+  .reboot-btn:hover { background: #ff3344; color: #000; box-shadow: 0 0 15px #ff3344; }
+
+  /* ارتداد عند الخطأ */
+  .screen-shake { animation: shake 0.35s ease-in-out; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
   .rtl-mode { direction: rtl; text-align: right; }
   .ltr-mode { direction: ltr; text-align: left; }
   .center-text { text-align: center !important; }
 </style>
 
 <script>
+  // نظام المؤثرات الصوتية الافتراضي (Web Audio API)
+  let audioEnabled = true;
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function playTone(freq, type, duration, gainVal = 0.08) {
+    if (!audioEnabled) return;
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    let osc = audioCtx.createOscillator();
+    let gainNode = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  function playSound(name) {
+    if (!audioEnabled) return;
+    if (name === 'correct') {
+      playTone(523.25, 'triangle', 0.1);
+      setTimeout(() => playTone(659.25, 'triangle', 0.15), 100);
+      setTimeout(() => playTone(1046.50, 'triangle', 0.2), 200);
+    } else if (name === 'wrong') {
+      playTone(180, 'sawtooth', 0.2, 0.12);
+      setTimeout(() => playTone(130, 'sawtooth', 0.3, 0.15), 150);
+    } else if (name === 'click') {
+      playTone(800, 'sine', 0.03, 0.03);
+    } else if (name === 'over') {
+      playTone(250, 'sawtooth', 0.3, 0.15);
+      setTimeout(() => playTone(180, 'sawtooth', 0.5, 0.15), 300);
+    }
+  }
+
+  function toggleAudio() {
+    audioEnabled = !audioEnabled;
+    document.getElementById('audio-btn').innerText = audioEnabled ? '🔊' : '🔇';
+  }
+
+  // الترجمة واللغات
   const dict = {
     ar: {
-      gameTitle: "[ اختراق المتتاليات ]",
+      gameTitle: "[ اختراق المتتاليات v2.0 ]",
       helpBtn: "[?] دليل النظام",
-      helpTitle: "⚠️ تعليمات الاختراق",
-      helpText: "اكتشف النمط الرياضي السري المخفي. أدخل الرقم المفقود مكان علامة الاستفهام (?) قبل انتهاء الوقت لتجاوز الجدار الناري. 3 أخطاء وتفقد الاتصال!",
+      helpTitle: "⚠️ تعليمات الاختراق التكتيكي",
+      helpText: "اكتشف النمط الرياضي السري (حسابي، تضاعفي، فيبوناتشي، أو عمليات مركبة). أدخل الرقم المفقود مكان (?) قبل نفاد الطاقة. الإجابات المتتالية تمنحك مضاعف نقاط (COMBO).",
       score: "النقاط:",
+      high: "الرقم القياسي:",
       level: "المستوى:",
-      time: "الوقت:",
+      time: "الوقت المتبقي:",
       timeUnit: "ثا",
-      placeholder: "أدخل الرقم السري لفك التشفير...",
+      placeholder: "فك الشفرة...",
       exec: "تنفيذ",
-      goDesc: "تم رصد الاختراق وإغلاق المنافذ!",
+      hintBtn: "💡 تلميح (-5 ثوان)",
+      goDesc: "تم حظر العقدة وتفعيل جدار الحماية!",
       goScore: "النقاط النهائية:",
-      goLevel: "مستوى الاختراق:",
+      goLevel: "المستوى المحقق:",
+      goHigh: "أفضل رقم قياسي:",
       reboot: "إعادة الإقلاع",
-      rebootIcon: "⟲",
-      close: "إغلاق",
-      correct: ">> وصول مصرح به",
-      wrong: ">> فشل التخطي",
-      timeout: ">> انتهى الوقت"
+      close: "تأكيد وإغلاق",
+      correct: ">> وصول مصرح به. تشفير مكتمل.",
+      wrong: ">> تم رصد محاولة غير شرعية!",
+      timeout: ">> نفدت طاقة المعالجة!",
+      patternLocked: "[ تشفير نشط ]"
     },
     en: {
-      gameTitle: "[ SEQUENCE HACKER ]",
+      gameTitle: "[ SEQUENCE HACKER v2.0 ]",
       helpBtn: "[?] SYSTEM MANUAL",
-      helpTitle: "⚠️ HACKING INSTRUCTIONS",
-      helpText: "Discover the hidden mathematical pattern. Enter the missing number (?) before time runs out to bypass the firewall. 3 strikes and you are out!",
+      helpTitle: "⚠️ TACTICAL INSTRUCTIONS",
+      helpText: "Identify mathematical patterns (linear, geometric, Fibonacci, alternating). Solve (?) before CPU drains. Chaining solutions increases your COMBO multiplier!",
       score: "SCORE:",
+      high: "RECORD:",
       level: "LEVEL:",
-      time: "TIME:",
+      time: "TIME LEFT:",
       timeUnit: "s",
-      placeholder: "Enter secret code to decrypt...",
+      placeholder: "Enter decrypted key...",
       exec: "EXEC",
-      goDesc: "BREACH DETECTED. PORTS CLOSED!",
+      hintBtn: "💡 HINT (-5s)",
+      goDesc: "INTRUSION BLOCKED! PORTS SEALED!",
       goScore: "FINAL SCORE:",
-      goLevel: "HACK LEVEL:",
-      reboot: "REBOOT_SYSTEM",
-      rebootIcon: ">",
-      close: "CLOSE",
-      correct: ">> ACCESS GRANTED",
-      wrong: ">> ACCESS DENIED",
-      timeout: ">> TIMEOUT"
+      goLevel: "LEVEL REACHED:",
+      goHigh: "BEST RECORD:",
+      reboot: "SYSTEM REBOOT",
+      close: "CONFIRM & CLOSE",
+      correct: ">> ACCESS GRANTED. PROCEED.",
+      wrong: ">> BREACH DENIED!",
+      timeout: ">> CPU OVERLOAD TIMEOUT!",
+      patternLocked: "[ ENCRYPTED NODE ]"
     },
     fr: {
-      gameTitle: "[ HACKEUR DE SÉQUENCE ]",
+      gameTitle: "[ PIRATAGE DE SÉQUENCE v2.0 ]",
       helpBtn: "[?] MANUEL SYSTÈME",
-      helpTitle: "⚠️ INSTRUCTIONS DE PIRATAGE",
-      helpText: "Découvrez le modèle mathématique caché. Entrez le nombre manquant (?) avant la fin du temps imparti. 3 erreurs et vous êtes déconnecté!",
+      helpTitle: "⚠️ INSTRUCTIONS TACTIQUES",
+      helpText: "Identifiez les suites mathématiques (linéaires, géométriques, Fibonacci, alternées). Trouvez (?) avant la coupure d'énergie.",
       score: "SCORE:",
+      high: "RECORD:",
       level: "NIVEAU:",
       time: "TEMPS:",
       timeUnit: "s",
-      placeholder: "Entrer le code pour décrypter...",
+      placeholder: "Décryptez le code...",
       exec: "EXÉC",
-      goDesc: "INTRUSION DÉTECTÉE. PORTS FERMÉS!",
+      hintBtn: "💡 INDICE (-5s)",
+      goDesc: "INTRUSION BLOQUÉE! PORTS SCELLÉS!",
       goScore: "SCORE FINAL:",
       goLevel: "NIVEAU ATTEINT:",
-      reboot: "REDÉMARRER",
-      rebootIcon: ">",
+      goHigh: "MEILLEUR RECORD:",
+      reboot: "REDÉMARRAGE",
       close: "FERMER",
-      correct: ">> ACCÈS AUTORISÉ",
-      wrong: ">> ACCÈS REFUSÉ",
-      timeout: ">> TEMPS ÉCOULÉ"
+      correct: ">> ACCÈS CONFIRMÉ. NŒUD FORCÉ.",
+      wrong: ">> ACCÈS REFUSÉ!",
+      timeout: ">> TEMPS ÉCOULÉ!",
+      patternLocked: "[ CHIFFREMENT ACTIF ]"
     }
   };
 
   let currentLang = 'ar';
-  let score = 0, level = 1, lives = 3, correctAnswer = 0, timeLeft = 15, timerInterval = null;
+  let score = 0, level = 1, lives = 3, correctAnswer = 0;
+  let timeLeft = 15, maxLevelTime = 15, timerInterval = null;
+  let combo = 0, currentHint = "";
+  let highScore = parseInt(localStorage.getItem('seq_hack_highscore')) || 0;
 
   function changeLang(lang) {
     currentLang = lang;
     document.querySelectorAll('.lang-btns button').forEach(btn => btn.classList.remove('active-lang'));
     document.getElementById(`btn-${lang}`).classList.add('active-lang');
-    
-    // تغيير نصوص الواجهة
+
     document.getElementById('main-game-title').innerText = dict[lang].gameTitle;
     document.getElementById('help-btn').innerText = dict[lang].helpBtn;
     document.getElementById('help-title').innerText = dict[lang].helpTitle;
     document.getElementById('help-text').innerText = dict[lang].helpText;
     document.getElementById('label-score').innerText = dict[lang].score;
+    document.getElementById('label-high').innerText = dict[lang].high;
     document.getElementById('label-level').innerText = dict[lang].level;
     document.getElementById('label-time').innerText = dict[lang].time;
     document.getElementById('time-unit').innerText = dict[lang].timeUnit;
     document.getElementById('answer-input').placeholder = dict[lang].placeholder;
     document.getElementById('submit-btn').innerText = dict[lang].exec;
+    document.getElementById('hint-btn').innerText = dict[lang].hintBtn;
     document.getElementById('go-desc').innerText = dict[lang].goDesc;
     document.getElementById('go-score-label').innerText = dict[lang].goScore;
     document.getElementById('go-level-label').innerText = dict[lang].goLevel;
-    
-    document.getElementById('restart-btn').innerHTML = `<span>${dict[lang].rebootIcon}</span> <span>${dict[lang].reboot}</span>`;
+    document.getElementById('go-high-label').innerText = dict[lang].goHigh;
+    document.getElementById('reboot-txt').innerText = dict[lang].reboot;
     document.getElementById('close-help-btn').innerText = dict[lang].close;
 
-    // تطبيق الاتجاه
     let dirClass = lang === 'ar' ? 'rtl-mode' : 'ltr-mode';
     let removeClass = lang === 'ar' ? 'ltr-mode' : 'rtl-mode';
-    
+
     document.querySelectorAll('.dynamic-dir').forEach(el => {
       el.classList.remove(removeClass);
       el.classList.add(dirClass);
-      if(el.id === 'help-text' || el.id === 'go-desc' || el.id === 'feedback-msg' || el.id === 'main-game-title') {
-          el.classList.add('center-text');
+      if (['help-text', 'go-desc', 'feedback-msg', 'main-game-title'].includes(el.id)) {
+        el.classList.add('center-text');
       }
     });
   }
 
   function toggleHelp() {
+    playSound('click');
     let modal = document.getElementById('help-modal');
     modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
   }
 
   function startTimer() {
     clearInterval(timerInterval);
-    let maxTime = Math.max(7, 16 - level);
-    timeLeft = maxTime;
-    document.getElementById("time-val").innerText = timeLeft;
-    let timerBar = document.getElementById("timer-bar");
-    timerBar.style.width = "100%";
-    timerBar.style.background = "#00ff41";
+    maxLevelTime = Math.max(8, 17 - level);
+    timeLeft = maxLevelTime;
+    updateTimerVisuals();
 
     timerInterval = setInterval(() => {
       timeLeft--;
-      document.getElementById("time-val").innerText = timeLeft;
-      timerBar.style.width = ((timeLeft / maxTime) * 100) + "%";
-      if (timeLeft <= 5) { timerBar.style.background = "#ff003c"; }
-      if (timeLeft <= 0) { clearInterval(timerInterval); handleWrongAnswer(dict[currentLang].timeout); }
+      updateTimerVisuals();
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleWrongAnswer(dict[currentLang].timeout);
+      }
     }, 1000);
   }
 
+  function updateTimerVisuals() {
+    document.getElementById("time-val").innerText = timeLeft;
+    let timerBar = document.getElementById("timer-bar");
+    let percent = Math.max(0, (timeLeft / maxLevelTime) * 100);
+    timerBar.style.width = percent + "%";
+    timerBar.style.background = timeLeft <= 4 ? "#ff3344" : "#00ff66";
+  }
+
+  // مولد المتتاليات المتقدم
   function generateSequence() {
     startTimer();
-    let sequence = [], seqLength = 5;
-    let patternType = (level >= 5 && Math.random() > 0.4) ? "geometric" : (level >= 3 ? "complex" : "simple");
+    let sequence = [];
+    let seqLength = 5;
+    currentHint = "";
+    document.getElementById('pattern-type-tag').innerText = dict[currentLang].patternLocked;
 
-    if (patternType === "geometric") {
-      let start = Math.floor(Math.random() * 3) + 2;
-      let step = Math.random() > 0.5 ? 2 : 3;
-      for (let i = 0; i < seqLength; i++) { sequence.push(start * Math.pow(step, i)); }
-    } else if (patternType === "complex") {
-      let start = Math.floor(Math.random() * 30) + 10;
-      let step = (Math.floor(Math.random() * 6) + 2) * (Math.random() > 0.5 ? 1 : -1);
-      for (let i = 0; i < seqLength; i++) { sequence.push(start + (i * step)); }
-    } else {
-      let start = Math.floor(Math.random() * 10) + 1;
-      let step = Math.floor(Math.random() * 5) + 1;
-      for (let i = 0; i < seqLength; i++) { sequence.push(start + (i * step)); }
+    // تحديد نوع النمط حسب المستوى
+    let types = ['linear'];
+    if (level >= 2) types.push('alternating');
+    if (level >= 3) types.push('geometric');
+    if (level >= 4) types.push('fibonacci');
+    if (level >= 5) types.push('squares');
+
+    let pattern = types[Math.floor(Math.random() * types.length)];
+
+    if (pattern === 'linear') {
+      let start = Math.floor(Math.random() * 20) + 1;
+      let step = (Math.floor(Math.random() * 7) + 2) * (level > 2 && Math.random() > 0.5 ? -1 : 1);
+      for (let i = 0; i < seqLength; i++) sequence.push(start + (i * step));
+      currentHint = currentLang === 'ar' ? `خطوة جمع/طرح ثابتة (${step > 0 ? '+' : ''}${step})` : `Linear step: ${step}`;
+    } 
+    else if (pattern === 'alternating') {
+      let val = Math.floor(Math.random() * 10) + 2;
+      let add = Math.floor(Math.random() * 4) + 2;
+      let mul = 2;
+      sequence.push(val);
+      for (let i = 1; i < seqLength; i++) {
+        val = (i % 2 === 1) ? val + add : val * mul;
+        sequence.push(val);
+      }
+      currentHint = currentLang === 'ar' ? `نمط تبادلي (+${add} ثم ×${mul})` : `Alternating (+${add}, *${mul})`;
+    }
+    else if (pattern === 'geometric') {
+      let start = Math.floor(Math.random() * 4) + 1;
+      let ratio = Math.random() > 0.6 ? 3 : 2;
+      for (let i = 0; i < seqLength; i++) sequence.push(start * Math.pow(ratio, i));
+      currentHint = currentLang === 'ar' ? `ضرب مضاعف في (${ratio})` : `Geometric factor: x${ratio}`;
+    }
+    else if (pattern === 'fibonacci') {
+      let a = Math.floor(Math.random() * 4) + 1;
+      let b = a + Math.floor(Math.random() * 3) + 1;
+      sequence = [a, b];
+      for (let i = 2; i < seqLength; i++) sequence.push(sequence[i - 1] + sequence[i - 2]);
+      currentHint = currentLang === 'ar' ? "كل عنصر = مجموع العنصرين السابقين" : "Sum of previous two numbers";
+    }
+    else if (pattern === 'squares') {
+      let offset = Math.floor(Math.random() * 5);
+      let base = Math.floor(Math.random() * 3) + 1;
+      for (let i = 0; i < seqLength; i++) sequence.push(Math.pow(base + i, 2) + offset);
+      currentHint = currentLang === 'ar' ? `مربعات الأرقام n² ${offset > 0 ? '+' + offset : ''}` : `Square pattern: n² + ${offset}`;
     }
 
-    let hiddenIndex = Math.floor(Math.random() * seqLength);
+    let hiddenIndex = Math.floor(Math.random() * (seqLength - 1)) + 1;
     correctAnswer = sequence[hiddenIndex];
     sequence[hiddenIndex] = "?";
 
-    document.getElementById("sequence-display").innerHTML = sequence.map(num => `<span>${num}</span>`).join('<span style="color:#008f11">,</span>');
+    document.getElementById("sequence-display").innerHTML = sequence
+      .map(num => `<span>${num}</span>`)
+      .join('<span style="color:#00ff6644">,</span>');
+
     document.getElementById("answer-input").value = "";
     document.getElementById("answer-input").focus();
   }
 
+  function useHint() {
+    playSound('click');
+    if (timeLeft > 5) {
+      timeLeft -= 5;
+      updateTimerVisuals();
+      document.getElementById('pattern-type-tag').innerText = `[ ${currentHint} ]`;
+      document.getElementById('pattern-type-tag').style.color = '#ffaa00';
+    }
+  }
+
   function checkAnswer() {
-    let inputVal = document.getElementById("answer-input").value;
+    let inputVal = document.getElementById("answer-input").value.trim();
     if (inputVal === "") return;
     let userAnswer = parseInt(inputVal);
     let feedback = document.getElementById("feedback-msg");
     clearInterval(timerInterval);
 
     if (userAnswer === correctAnswer) {
-      score += (10 + level * 2);
-      feedback.innerText = dict[currentLang].correct;
-      feedback.className = "msg-correct dynamic-dir center-text";
-      if (score >= level * 50) { level++; document.getElementById("level-val").innerText = level; }
+      combo++;
+      let bonusPoints = Math.round((15 + level * 3) * (1 + (combo - 1) * 0.25));
+      score += bonusPoints;
+      
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('seq_hack_highscore', highScore);
+        document.getElementById("high-val").innerText = highScore;
+      }
+
+      document.getElementById("combo-display").innerText = `COMBO x${combo}`;
       document.getElementById("score-val").innerText = score;
-      setTimeout(() => { feedback.innerText = ""; generateSequence(); }, 800);
+
+      feedback.innerText = `${dict[currentLang].correct} (+${bonusPoints} PT)`;
+      feedback.className = "msg-correct dynamic-dir center-text";
+      playSound('correct');
+
+      if (score >= level * 65) {
+        level++;
+        document.getElementById("level-val").innerText = level;
+      }
+
+      setTimeout(() => {
+        feedback.innerText = "";
+        generateSequence();
+      }, 700);
+
     } else {
+      combo = 0;
+      document.getElementById("combo-display").innerText = `COMBO x1`;
       handleWrongAnswer(dict[currentLang].wrong);
     }
   }
 
   function handleWrongAnswer(msg) {
-    lives--; updateHearts();
+    lives--;
+    updateHearts();
+    playSound('wrong');
+
+    let term = document.getElementById('terminal-box');
+    term.classList.add('screen-shake');
+    setTimeout(() => term.classList.remove('screen-shake'), 400);
+
     let feedback = document.getElementById("feedback-msg");
-    feedback.innerText = msg + ` (ERR: -1)`;
+    feedback.innerText = msg;
     feedback.className = "msg-wrong dynamic-dir center-text";
 
-    if (lives <= 0) { triggerGameOver(); } 
-    else { setTimeout(() => { feedback.innerText = ""; generateSequence(); }, 1200); }
+    if (lives <= 0) {
+      setTimeout(triggerGameOver, 700);
+    } else {
+      setTimeout(() => {
+        feedback.innerText = "";
+        generateSequence();
+      }, 1100);
+    }
   }
 
   function updateHearts() {
     let heartsStr = "";
-    for (let i = 0; i < 3; i++) { heartsStr += (i < lives) ? "█" : "_"; }
-    document.getElementById("hearts-val").innerText = heartsStr;
-    if(lives === 1) { document.getElementById("hearts-val").style.color = "#ff003c"; }
+    for (let i = 0; i < 3; i++) heartsStr += (i < lives) ? "█" : "_";
+    let hElem = document.getElementById("hearts-val");
+    hElem.innerText = heartsStr;
+    hElem.style.color = lives === 1 ? "#ff3344" : "#00ff66";
   }
 
   function triggerGameOver() {
     clearInterval(timerInterval);
+    playSound('over');
     document.getElementById("game-ui").style.display = "none";
     document.getElementById("game-over-ui").style.display = "block";
     document.getElementById("final-score").innerText = score;
     document.getElementById("final-level").innerText = level;
+    document.getElementById("final-high").innerText = highScore;
   }
 
   function restartGame() {
-    score = 0; level = 1; lives = 3;
+    playSound('click');
+    score = 0;
+    level = 1;
+    lives = 3;
+    combo = 0;
+    document.getElementById("combo-display").innerText = `COMBO x1`;
     document.getElementById("score-val").innerText = score;
     document.getElementById("level-val").innerText = level;
-    document.getElementById("hearts-val").style.color = "#00ff41";
+    document.getElementById("high-val").innerText = highScore;
     updateHearts();
     document.getElementById("game-over-ui").style.display = "none";
     document.getElementById("game-ui").style.display = "block";
@@ -361,9 +607,14 @@
   }
 
   document.getElementById("answer-input").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") { event.preventDefault(); checkAnswer(); }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      checkAnswer();
+    }
   });
 
+  // التشغيل المبدئي
+  document.getElementById("high-val").innerText = highScore;
   changeLang('ar');
   generateSequence();
 </script>
